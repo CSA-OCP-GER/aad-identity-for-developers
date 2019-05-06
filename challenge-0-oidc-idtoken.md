@@ -24,7 +24,7 @@ Get-AzContext
 ### Azure CLI
 
 ```Shell
-az aad app
+az ad app create --display-name challengeidtokencli --reply-urls http://localhost:5001/api/tokenecho
 ```
 
 Get the ID of your current AAD tenant
@@ -73,6 +73,10 @@ Remove-AzAdApplication -ApplicationId <applicationid> -Force
 ```
 
 ### Azure CLI
+
+```Shell
+az ad app delete --id <applicationid>
+```
 
 ## Summary
 
