@@ -328,3 +328,5 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+apps/token-echo-server/appsettings.Development.json
+apps/token-echo-server/appsettings.json
