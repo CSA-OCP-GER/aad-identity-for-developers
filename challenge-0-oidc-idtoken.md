@@ -36,7 +36,7 @@ az account show
 ## Run the Token Echo Server
 
 Open another shell and run the [Token Echo Server](apps/token-echo-server) (/apps/token-echo-server).
-This helper ASP.NET Core tool is used to echo the token issued by your AAD. The tool is listening on port 5001 on your local machine. Tokens are accepted on route http://localhost/api/tokenecho . That's why we registered an AAD application with reply url http://localhost/api/tokenecho .
+This helper ASP.NET Core tool is used to echo the token issued by your AAD. The tool is listening on port 5001 on your local machine. Tokens are accepted on route http://localhost:5001/api/tokenecho . That's why we registered an AAD application with reply url http://localhost:5001/api/tokenecho .
 
 ```
 dotnet run
