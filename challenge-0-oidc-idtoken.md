@@ -81,4 +81,3 @@ az ad app delete --id <applicationid>
 ## Summary
 
 This challenge showed how to create an Application in AAD and how an OpenIdConnect request is created to authenticate a user.
-In a real scenario an integration library like [MSAL](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet) is used to protect your web site from unauthenticated requests.
