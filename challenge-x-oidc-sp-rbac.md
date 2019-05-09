@@ -62,8 +62,7 @@ We need the following parameters:
 ```Powershell
 $applicationId = $sp.ApplicationId
 $tenantId = "<your tenant id>"
-$result=Invoke-RestMethod -Uri https://login.microsoftonline.com/$tenantId/oauth2/token?api-version=1.0 -Method Post -Body @{"grant_type" = "client_credentials"; "resource" = "https://management.core.windows.net/"; "client_id" = "$applicationId"; "client_secret" = "<your password>" }
-$result
+$result=Invoke-RestMethod -Uri https://login.microsoftonline.com/$tenantId/oauth2/token?api-version=1.0 -Method Post -Body @{"grant_type" = "client_credentials"; "resource" = "https://management.core.windows.net/"; "client_id" = "$applicationId"; "client_secret" = "<your password>" } | ConvertFrom-Json
 ```
 
 The result contains a valid access token that can be used to call the Azure Resource Manager REST API.
