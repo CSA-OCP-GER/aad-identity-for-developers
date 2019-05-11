@@ -11,7 +11,7 @@
 @if (User.Identity.IsAuthenticated)
 {
 <div class="text-left">
-    <h2>Welcome</h2>
+    <h2>Welcome @User.Identity.Name</h2>
     <p>@Html.DisplayFor(model => model.Name)</p>
 </div>
 }

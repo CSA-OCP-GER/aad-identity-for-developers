@@ -21,7 +21,7 @@ namespace aspnetcore_mvc_oauth2_code_grant.Helper
         {
             try
             {
-                var token = await _tokenService.GetAccessToken(principal);
+                var token = await _tokenService.GetAccessTokenAsync(principal);
 
                 var client = new HttpClient();
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);

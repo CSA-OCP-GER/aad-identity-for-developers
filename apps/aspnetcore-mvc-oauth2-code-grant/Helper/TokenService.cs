@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 using System;
-using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -10,67 +9,50 @@ namespace aspnetcore_mvc_oauth2_code_grant.Helper
 {
     public class TokenService
     {
-        private static object _syncRoot = new object();
-        private static Dictionary<string, byte[]> _tokenCache = new Dictionary<string, byte[]>();
         private readonly AzureAdOptions _azureAdOptions;
         private readonly string[] _scopes = new[] { "https://graph.microsoft.com/User.Read" };
+        private readonly UserTokenCacheProviderFactory _userTokenCacheProviderFactory;
 
-        public TokenService(IOptions<AzureAdOptions> options)
+        public TokenService(IOptions<AzureAdOptions> options, UserTokenCacheProviderFactory userTokenCacheProviderFactory)
         {
             _azureAdOptions = options.Value;
+            _userTokenCacheProviderFactory = userTokenCacheProviderFactory;
         }
 
-        public async Task<AuthenticationResult> GetAccessTokenByAuthorizationCode(ClaimsPrincipal principal, string code)
+        public async Task<AuthenticationResult> GetAccessTokenByAuthorizationCodeAsync(ClaimsPrincipal principal, string code)
         {
-            var app = BuildApp();
+            var app = BuildApp(principal);
             var result = await app.AcquireTokenByAuthorizationCode(_scopes, code).ExecuteAsync().ConfigureAwait(false);
-            SaveToCache(principal, app);
             var account = await app.GetAccountAsync(principal.GetMsalAccountId());
             return result;
         }
 
-        public async Task<string> GetAccessToken(ClaimsPrincipal principal)
+        public async Task<string> GetAccessTokenAsync(ClaimsPrincipal principal)
         {
-            var app = BuildApp();
-            LoadFromCache(principal, app);
+            var app = BuildApp(principal);
             var account = await app.GetAccountAsync(principal.GetMsalAccountId());
             var token = await app.AcquireTokenSilent(_scopes, account).ExecuteAsync().ConfigureAwait(false);
-            SaveToCache(principal, app);
             return token.AccessToken;
         }
 
         public void RemoveAccount(ClaimsPrincipal principal)
         {
-            lock (_syncRoot)
-                _tokenCache.Remove(principal.GetMsalAccountId());
+            _userTokenCacheProviderFactory.Create(principal).Clear();
         }
 
-        private IConfidentialClientApplication BuildApp()
+        private IConfidentialClientApplication BuildApp(ClaimsPrincipal principal)
         {
-            return ConfidentialClientApplicationBuilder.Create(_azureAdOptions.ClientId)
+            var app = ConfidentialClientApplicationBuilder.Create(_azureAdOptions.ClientId)
                 .WithClientSecret(_azureAdOptions.ClientSecret)
+                // we only allow users from our tenant
                 .WithAuthority(AzureCloudInstance.AzurePublic, Guid.Parse(_azureAdOptions.TenantId))
+                // reply url
                 .WithRedirectUri(_azureAdOptions.BaseUrl + _azureAdOptions.CallbackPath)
                 .Build();
-        }
 
-        private void SaveToCache(ClaimsPrincipal principal, IConfidentialClientApplication app)
-        {
-            var data = app.UserTokenCache.SerializeMsalV3();
+            _userTokenCacheProviderFactory.Create(principal).Initialize(app.UserTokenCache);
 
-            lock (_syncRoot)
-                _tokenCache[principal.GetMsalAccountId()] = data;
-        }
-
-        private void LoadFromCache(ClaimsPrincipal principal, IConfidentialClientApplication app)
-        {
-            lock (_syncRoot)
-            {
-                if (!_tokenCache.ContainsKey(principal.GetMsalAccountId()))
-                    throw new InvalidOperationException();
-
-                app.UserTokenCache.DeserializeMsalV3(_tokenCache[principal.GetMsalAccountId()]);
-            }
+            return app;
         }
     }
 }

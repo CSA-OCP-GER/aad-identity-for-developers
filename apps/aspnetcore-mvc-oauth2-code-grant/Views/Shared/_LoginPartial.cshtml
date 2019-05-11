@@ -4,7 +4,7 @@
 @if (User.Identity.IsAuthenticated)
 {
         <li class="nav-item">
-            <span class="nav-text text-dark">Hello @(User.Identity.Name ?? User.FindFirst("preferred_username").Value)!</span>
+            <span class="nav-text text-dark">Hello @User.Identity.Name!</span>
         </li>
         <li class="nav-item">
             <a class="nav-link text-dark" asp-area="AzureAD" asp-controller="Account" asp-action="SignOut">Sign out</a>

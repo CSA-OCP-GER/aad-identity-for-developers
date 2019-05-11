@@ -2,12 +2,10 @@
 using aspnetcore_mvc_oauth2_code_grant.Helper;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -36,6 +34,8 @@ namespace aspnetcore_mvc_oauth2_code_grant
 
             services.AddSingleton<TokenService>();
             services.AddSingleton<GraphClientService>();
+            services.AddSingleton<UserTokenCacheProviderFactory>();
+            services.AddMemoryCache();
 
             services.AddAuthentication(sharedOptions =>
             {
@@ -46,13 +46,7 @@ namespace aspnetcore_mvc_oauth2_code_grant
             .AddAzureAd(options => Configuration.Bind("AzureAd", options))
             .AddCookie();
 
-            services.AddMvc(options =>
-            {
-                //var policy = new AuthorizationPolicyBuilder()
-                //    .RequireAuthenticatedUser()
-                //    .Build();
-                //options.Filters.Add(new AuthorizeFilter(policy));
-            })
+            services.AddMvc()
             .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
