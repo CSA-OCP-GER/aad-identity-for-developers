@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Identity.Client;
+using System;
 using System.Security.Claims;
 
 namespace aspnetcore_mvc_oauth2_code_grant.Helper
@@ -48,7 +49,7 @@ namespace aspnetcore_mvc_oauth2_code_grant.Helper
 
         private void Persist(string key, ITokenCache tokenCache)
         {
-            _cache.Set(key, tokenCache.SerializeMsalV3());
+            _cache.Set(key, tokenCache.SerializeMsalV3(), DateTimeOffset.Now.AddHours(12));
         }
 
         private void Load(string key, ITokenCache tokenCache)

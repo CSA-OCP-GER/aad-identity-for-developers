@@ -35,6 +35,7 @@ namespace aspnetcore_mvc_oauth2_code_grant
             services.AddSingleton<TokenService>();
             services.AddSingleton<GraphClientService>();
             services.AddSingleton<UserTokenCacheProviderFactory>();
+            services.AddSingleton<TicketStoreService>();
             services.AddMemoryCache();
 
             services.AddAuthentication(sharedOptions =>
@@ -43,8 +44,7 @@ namespace aspnetcore_mvc_oauth2_code_grant
                 sharedOptions.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 sharedOptions.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
-            .AddAzureAd(options => Configuration.Bind("AzureAd", options))
-            .AddCookie();
+            .AddAzureAd(options => Configuration.Bind("AzureAd", options));
 
             services.AddMvc()
             .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);

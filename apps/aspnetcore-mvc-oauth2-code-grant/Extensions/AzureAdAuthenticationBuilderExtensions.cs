@@ -1,5 +1,6 @@
 ﻿using aspnetcore_mvc_oauth2_code_grant.Helper;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -18,7 +19,9 @@ namespace aspnetcore_mvc_oauth2_code_grant.Extensions
         {
             builder.Services.Configure(configureOptions);
             builder.Services.AddSingleton<IConfigureOptions<OpenIdConnectOptions>, ConfigureAzureOptions>();
+            builder.Services.AddSingleton<IConfigureOptions<CookieAuthenticationOptions>, ConfigureCookieOptions>();
             builder.AddOpenIdConnect();
+            builder.AddCookie();
             return builder;
         }
 
@@ -65,6 +68,16 @@ namespace aspnetcore_mvc_oauth2_code_grant.Extensions
                         context.HandleResponse(); // Suppress the exception
                         return Task.CompletedTask;
                     },
+                    OnRedirectToIdentityProviderForSignOut = context =>
+                    {
+                        var user = context.HttpContext.User;
+
+                        context.ProtocolMessage.LoginHint = user.GetLoginHint();
+                        context.ProtocolMessage.DomainHint = user.GetDomainHint();
+
+                        _tokenService.RemoveAccount(user);
+                        return Task.FromResult(true);
+                    },
                     OnAuthorizationCodeReceived = async (context) =>
                     {
                         // As AcquireTokenByAuthorizationCode is asynchronous we want to tell ASP.NET core
@@ -88,6 +101,26 @@ namespace aspnetcore_mvc_oauth2_code_grant.Extensions
             }
 
             public void Configure(OpenIdConnectOptions options)
+            {
+                Configure(Options.DefaultName, options);
+            }
+        }
+
+        public class ConfigureCookieOptions : IConfigureNamedOptions<CookieAuthenticationOptions>
+        {
+            private readonly TicketStoreService _ticketStore;
+
+            public ConfigureCookieOptions(TicketStoreService service)
+            {
+                _ticketStore = service;
+            }
+
+            public void Configure(string name, CookieAuthenticationOptions options)
+            {
+                options.SessionStore = _ticketStore;
+            }
+
+            public void Configure(CookieAuthenticationOptions options)
             {
                 Configure(Options.DefaultName, options);
             }

@@ -1,5 +1,4 @@
-﻿using aspnetcore_mvc_oauth2_code_grant.Helper;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Mvc;
@@ -9,13 +8,6 @@ namespace aspnetcore_mvc_oauth2_code_grant.Controllers
     [Route("[controller]/[action]")]
     public class AccountController : Controller
     {
-        private readonly TokenService _tokenService;
-
-        public AccountController(TokenService tokenService)
-        {
-            _tokenService = tokenService;
-        }
-
         [HttpGet]
         public IActionResult SignIn()
         {
@@ -30,8 +22,6 @@ namespace aspnetcore_mvc_oauth2_code_grant.Controllers
         {
             if (User.Identity.IsAuthenticated)
             {
-                _tokenService.RemoveAccount(User);
-
                 var callbackUrl = Url.Action(nameof(SignedOut), "Account", values: null, protocol: Request.Scheme);
                 return SignOut(
                     new AuthenticationProperties { RedirectUri = callbackUrl },

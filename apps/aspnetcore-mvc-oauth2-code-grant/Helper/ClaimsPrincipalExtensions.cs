@@ -41,5 +41,21 @@ namespace aspnetcore_mvc_oauth2_code_grant.Helper
 
             return tenantId;
         }
+
+        public static string GetLoginHint(this ClaimsPrincipal claimsPrincipal)
+        {
+            return claimsPrincipal.FindFirstValue("preferred_username");
+        }
+
+        public static string GetDomainHint(this ClaimsPrincipal claimsPrincipal)
+        {
+            // Tenant for MSA accounts
+            const string msaTenantId = "9188040d-6c67-4c5b-b112-36a304b66dad";
+
+            var tenantId = GetTenantId(claimsPrincipal);
+            string domainHint = string.IsNullOrWhiteSpace(tenantId) ? null :
+                tenantId == msaTenantId ? "consumers" : "organizations";
+            return domainHint;
+        }
     }
 }
