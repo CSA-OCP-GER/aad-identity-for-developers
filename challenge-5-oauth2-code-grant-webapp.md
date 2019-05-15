@@ -28,3 +28,5 @@ Get the ID of your current AAD tenant.
 ``` Powershell
 Get-AzContext
 ```
+
+# Todo..
