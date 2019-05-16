@@ -21,7 +21,7 @@ import { GraphService } from "./services/graph.service";
     HttpClientModule,
     MsalModule.forRoot({
       clientID: "<ApplicationId>",
-      authority: "https://login.microsoftonline.com/{TenantId}/",
+      authority: "https://login.microsoftonline.com/<TenantId>/",
       redirectUri: "http://localhost:5003",
       validateAuthority : true,
       cacheLocation : "localStorage",

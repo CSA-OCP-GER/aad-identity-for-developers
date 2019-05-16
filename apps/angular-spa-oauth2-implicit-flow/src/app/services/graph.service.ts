@@ -27,7 +27,6 @@ export class GraphService
                 return this.http.get(_this.endpoint + "me", options)
                     .map((response: Response) => 
                     {
-                        alert(response);
                         return JSON.stringify(response);
                     })
                     .pipe(catchError(_this.handleError));

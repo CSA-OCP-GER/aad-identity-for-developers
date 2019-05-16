@@ -62,10 +62,15 @@ export class AppComponent implements OnInit {
 
   public onGetUserProfile() : void
   {
+    this.profile = "Loading..."
     this.graphService.getUserProfile()
       .then(result => result.subscribe(profile => 
         {
           this.profile = profile;
-        }));
+        }))
+        .catch(reason => 
+        {
+          this.profile = reason;  
+        });
   }
 }
