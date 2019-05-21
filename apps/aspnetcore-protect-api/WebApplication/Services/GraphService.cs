@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using Microsoft.Identity.Client;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -9,33 +10,37 @@ using WebApplication.Helper;
 
 namespace WebApplication.Services
 {
-    public class ApiService
+    public class GraphService
     {
+        private readonly AzureAdOptions _adOptions;
         private readonly TokenService _tokenService;
-        private readonly ApiOptions _apiOptions;
-        private readonly AzureAdOptions _azureAdOptions;
+        private readonly string _graphUrl = "https://graph.microsoft.com";
 
-        public ApiService(TokenService tokenService, IOptions<ApiOptions> apiOptions, IOptions<AzureAdOptions> adOptions)
+        public GraphService(TokenService tokenService, IOptions<AzureAdOptions> adOptions)
         {
             _tokenService = tokenService;
-            _apiOptions = apiOptions.Value;
-            _azureAdOptions = adOptions.Value;
+            _adOptions = adOptions.Value;
         }
 
-        public async Task<string> GetClaims(ClaimsPrincipal principal)
+        public async Task<string> GetUserProfile(ClaimsPrincipal principal)
         {
             try
             {
-                var token = await _tokenService.GetAccessTokenAsync(principal, _azureAdOptions.ApiScopes);
+                var token = await _tokenService.GetAccessTokenAsync(principal, _adOptions.GraphScopes);
 
                 var client = new HttpClient();
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                return await client.GetStringAsync($"{_apiOptions.BaseUrl}/claims");
+                return await client.GetStringAsync($"{_graphUrl}/v1.0/me");
+            }
+            catch (MsalUiRequiredException)
+            {
+                throw;
             }
             catch (Exception e)
             {
                 return e.Message;
             }
+
         }
     }
 }

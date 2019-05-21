@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using WebApplication.Extensions;
@@ -10,7 +11,6 @@ namespace WebApplication.Helper
     public class TokenService
     {
         private readonly AzureAdOptions _azureAdOptions;
-        private readonly string[] _scopes = new[] { "https://graph.microsoft.com/User.Read" };
         private readonly UserTokenCacheProviderFactory _userTokenCacheProviderFactory;
 
         public TokenService(IOptions<AzureAdOptions> options, UserTokenCacheProviderFactory userTokenCacheProviderFactory)
@@ -19,19 +19,18 @@ namespace WebApplication.Helper
             _userTokenCacheProviderFactory = userTokenCacheProviderFactory;
         }
 
-        public async Task<AuthenticationResult> GetAccessTokenByAuthorizationCodeAsync(ClaimsPrincipal principal, string code)
+        public async Task<AuthenticationResult> GetAccessTokenByAuthorizationCodeAsync(ClaimsPrincipal principal, string code, IEnumerable<string> scopes)
         {
             var app = BuildApp(principal);
-            var result = await app.AcquireTokenByAuthorizationCode(_scopes, code).ExecuteAsync().ConfigureAwait(false);
-            var account = await app.GetAccountAsync(principal.GetMsalAccountId());
+            var result = await app.AcquireTokenByAuthorizationCode(scopes, code).ExecuteAsync().ConfigureAwait(false);
             return result;
         }
 
-        public async Task<string> GetAccessTokenAsync(ClaimsPrincipal principal)
+        public async Task<string> GetAccessTokenAsync(ClaimsPrincipal principal, IEnumerable<string> scopes)
         {
             var app = BuildApp(principal);
             var account = await app.GetAccountAsync(principal.GetMsalAccountId());
-            var token = await app.AcquireTokenSilent(_scopes, account).ExecuteAsync().ConfigureAwait(false);
+            var token = await app.AcquireTokenSilent(scopes, account).ExecuteAsync().ConfigureAwait(false);
             return token.AccessToken;
         }
 

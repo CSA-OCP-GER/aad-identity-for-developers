@@ -1,6 +1,6 @@
 ﻿@using System.Security.Principal
 
-@model WebApplication.Models.ClaimsModel
+@model WebApplication.Models.IndexModel
 
 @{
     ViewData["Title"] = "Home Page";
@@ -17,11 +17,20 @@
             <li>
                 <a asp-controller="Home" asp-action="GetClaims">Get claims</a>
             </li>
-            @if(null != Model)
+            @if (null != Model)
             {
                 <li>
                     @Html.DisplayFor(model => model.Claims);
-                </li>        
+                </li>
+            }
+            <li>
+                <a asp-controller="Home" asp-action="GetUserProfile">Get user profile</a>
+            </li>
+            @if (null != Model)
+            {
+                <li>
+                    @Html.DisplayFor(model => model.Profile);
+                </li>
             }
         </ul>
     </div>

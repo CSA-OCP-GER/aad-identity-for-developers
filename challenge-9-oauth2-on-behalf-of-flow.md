@@ -3,22 +3,22 @@
 ## Here is what you learn
 - Create a REST API that is protected by Azure AD
 - Create an Azure AD application for your REST API
+- Gain consent for the middle-tier application
 - Integrate authorization in Swagger for your API 
 - Use the OAuth2 auth code grant to acquire an access token from a client to call your REST API
-- Dynamically grant consent to read signed-in user's profile
 
 ## Protocol diagram
 At a high level, the entire authentication flow for a native/mobile/webapp looks a bit like this:
 
-![alt-text](images/code-grant-flow.png)
+![alt-text](images/protocols-oauth-on-behalf-of-flow.png)
 
 To protect an API with Azure AD an Azure AD application for the API must be created.
 An API does not sign in users, therefore no reply url must be created when the Azure AD application is registered.
 
 ## Sample scenario
-A sample scenario is already implemnted for this challenge. The sample contains a web API that is running on ASP.NET Core which is protected by Azure AD. The web API is accessed by an ASP.NET Core web application on behalf of the signed-in user. The ASP.NET Core Web application uses the OpenID Connect middleware and MSAL for .NET to acquire an access token for the API on behalf of the signed-in user.
+A sample scenario is already implemnted for this challenge. The sample contains a web API that is running on ASP.NET Core which is protected by Azure AD and calls Microsoft-Graph API on behlaf of signed in user to read user's profile. The web API is accessed by an ASP.NET Core web application on behalf of the signed-in user. The ASP.NET Core Web application uses the OpenID Connect middleware and MSAL for .NET to acquire an access token for the API on behalf of the signed-in user.
 The sources for the sample application is located here:
-[aspnetcore-protect-api](/apps/aspnetcore-protect-api)
+[aspnetcore-protect-api](/apps/aspnetcore-on-behalf-of-flow)
 
 ## Create the Azure AD applications
 
@@ -69,9 +69,19 @@ New-AzureADServicePrincipal -AppId $api.AppId
 
 ### Step 2: Register an Azure AD application for the Web application
 
+To access the API in the web application an AzureAD application must be registered with required resource access right to access the API.
+
 ```Powershell
+# required resource access (the API)
+$requiredResourceAccess = New-Object -TypeName Microsoft.Open.AzureAD.Model.RequiredResourceAccess
+$requiredResourceAccess.ResourceAppId = $api.AppId
+$requiredResourceAccess.ResourceAccess = New-Object System.Collections.Generic.List[Microsoft.Open.AzureAD.Model.ResourceAccess]
+$resourceAccess = New-Object Microsoft.Open.AzureAD.Model.ResourceAccess
+$resourceAccess.Id = $api.Oauth2Permissions[0].Id
+$resourceAccess.Type = "Scope"                                                            
+$requiredResourceAccess.ResourceAccess.Add($resourceAccess) 
 # Create the Azure AdApplication
-$app = New-AzureADApplication -DisplayName EchoClaimsWebApp -IdentifierUris "https://echoclaimswebapp" -ReplyUrls "http://localhost:5003/signin-oidc"
+$app = New-AzureADApplication -DisplayName EchoClaimsWebApp -IdentifierUris "https://echoclaimswebapp" -ReplyUrls "http://localhost:5003/signin-oidc" -RequiredResourceAccess $requiredResourceAccess
 ```
 
 To acquire an access token for the API we use the OAuth2 code grant flow, therefore we need a client secret.
@@ -85,6 +95,17 @@ Create a ServicePrincipal for the application
 
 ```Powershell
 New-AzureADServicePrincipal -AppId $app.AppId
+```
+
+
+### Step 3: Known Client Application
+
+This setting is used for bundling consent if you have a solution that contains two parts: a client app and a custom web API app. If you enter the appID of the client app into this value, the user will only have to consent once to the client app. Azure AD will know that consenting to the client means implicitly consenting to the web API and will automatically provision service principals for both the client and web API at the same time. Both the client and the web API app must be registered in the same tenant.
+
+```Powershell
+$api.KnownClientApplications = New-Object System.Collections.Generic.List[System.String]
+$api.KnownClientApplications.Add($app.AppId)
+Set-AzureADApplication -ObjectId $api.ObjectId -KnownClientApplications $api.KnownClientApplications
 ```
 
 ## Run the demo application
@@ -112,15 +133,3 @@ In another shell navigate to the folder /apps/apsnetcore-protect-api/WebApplicat
 dotnet run
 ```
 The web application is listening on port 5003.
-
-Open a browser and navigate to http://localhost:5003 and sign in.
-Azure AD will ask you if you want to grant consent for application permissions.
-After you have granted consent to access EchoClaims API click the link "GetClaims".
-The claims for the signed-in user will be displayed.
-
-Now, try to click the link "GetUserProfile". As you didn't grant consent to access full user's profile the application needs to be redirected to Azure AD to gain consent to access
-the full profile of the user.
-
-Take a look at the implementation of the [HomeController](apps/aspnetcore-protect-api/WebApplication/Controllers/HomeController.cs).
-The method "GetUserProfile" tries to get the full profile of the signed-in user. In the catch statement the controller redirects to "Home/ConsentRequried" if an exception of type MsalUiRequiredException is thrown.
-The View [ConsentRequired](apps/aspnetcore-protect-api/WebApplication/Views/Home/ConsentRequired.cshtml) informs the user that he must be redirected to Azure AD to grant consent to access the profile of the signed-in user. In the [AccountController](apps/aspnetcore-protect-api/WebApplication/Controllers/AccountController.cs) the method "GrantConsent" redirects the user to Azure AD to grant consent.

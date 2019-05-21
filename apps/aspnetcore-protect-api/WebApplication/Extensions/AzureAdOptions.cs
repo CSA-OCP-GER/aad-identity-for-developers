@@ -11,6 +11,8 @@ namespace WebApplication.Extensions
         public string TenantId { get; set; }
         public string CallbackPath { get; set; }
         public string BaseUrl { get; set; }
+        public List<string> ConsentScopes { get; set; }
         public List<string> ApiScopes { get; set; }
+        public List<string> GraphScopes { get; set; }
     }
 }

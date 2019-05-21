@@ -53,7 +53,9 @@ namespace WebApplication.Extensions
                 options.TokenValidationParameters.NameClaimType = "preferred_username";
                 // We ask ASP.NET to request a Code and an Id Token
                 options.ResponseType = OpenIdConnectResponseType.CodeIdToken;
-                options.Scope.Add("https://graph.microsoft.com/User.Read");
+
+                foreach (var scope in _azureOptions.ConsentScopes)
+                    options.Scope.Add(scope);
 
                 options.Events = new OpenIdConnectEvents
                 {
@@ -104,7 +106,7 @@ namespace WebApplication.Extensions
 
                         var code = context.ProtocolMessage.Code;
                         
-                        var result = await _tokenService.GetAccessTokenByAuthorizationCodeAsync(context.Principal, code);
+                        var result = await _tokenService.GetAccessTokenByAuthorizationCodeAsync(context.Principal, code, _azureOptions.ApiScopes);
 
                         // Do not share the access token with ASP.NET Core otherwise ASP.NET will cache it
                         // and will not send the OAuth 2.0 request in case a further call to

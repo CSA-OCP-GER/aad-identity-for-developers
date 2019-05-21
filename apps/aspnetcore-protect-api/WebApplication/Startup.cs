@@ -31,13 +31,13 @@ namespace WebApplication
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.Configure<ApiOptions>(cfg => Configuration.Bind("Api"));
+            services.Configure<ApiOptions>(cfg => Configuration.Bind("Api", cfg));
 
             services.AddSingleton<TokenService>();
-            services.AddSingleton<GraphClientService>();
             services.AddSingleton<UserTokenCacheProviderFactory>();
             services.AddSingleton<TicketStoreService>();
             services.AddSingleton<ApiService>();
+            services.AddSingleton<GraphService>();
             services.AddMemoryCache();
 
             services.AddAuthentication(sharedOptions =>
