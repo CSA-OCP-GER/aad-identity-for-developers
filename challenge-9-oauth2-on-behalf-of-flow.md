@@ -3,6 +3,7 @@
 ## Here is what you learn
 - Create a REST API that is protected by Azure AD
 - Create an Azure AD application for your REST API
+- Create static permissions for your REST Api during application registration
 - Gain consent for the middle-tier application
 - Integrate authorization in Swagger for your API 
 - Use the OAuth2 auth code grant to acquire an access token from a client to call your REST API
@@ -16,9 +17,18 @@ To protect an API with Azure AD an Azure AD application for the API must be crea
 An API does not sign in users, therefore no reply url must be created when the Azure AD application is registered.
 
 ## Sample scenario
-A sample scenario is already implemnted for this challenge. The sample contains a web API that is running on ASP.NET Core which is protected by Azure AD and calls Microsoft-Graph API on behlaf of signed in user to read user's profile. The web API is accessed by an ASP.NET Core web application on behalf of the signed-in user. The ASP.NET Core Web application uses the OpenID Connect middleware and MSAL for .NET to acquire an access token for the API on behalf of the signed-in user.
+A sample scenario is already implemnted for this challenge. The sample contains a web API that is running on ASP.NET Core which is protected by Azure AD and calls Microsoft-Graph API on behalf of signed in user to read user's profile. The web API is accessed by an ASP.NET Core web application on behalf of the signed-in user. The ASP.NET Core Web application uses the OpenID Connect middleware and MSAL for .NET to acquire an access token for the API on behalf of the signed-in user.
 The sources for the sample application is located here:
 [aspnetcore-protect-api](/apps/aspnetcore-on-behalf-of-flow)
+
+### /.default Scope
+To grant consent for the middle-tier API the scope /.default can be used.
+This is a built-in scope for every application that refers to the static list of permissions configured on the application registration.
+If you need further information about the /.default scope take a look [here](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent#the-default-scope).
+
+### Known Client Application
+The setting "knownClientApplication" of an Azure AD application is used for bundling consent if you have a solution that contains two parts: a client app and a custom web API app. If you enter the appID of the client app into this value, the user will only have to consent once to the client app. Azure AD will know that consenting to the client means implicitly consenting to the web API and will automatically provision service principals for both the client and web API at the same time. Both the client and the web API app must be registered in the same tenant.
+
 
 ## Create the Azure AD applications
 
@@ -28,6 +38,7 @@ The API is running on port 5002 and the Web application is running on port 5003.
 Connect to AzureAd Instance:
 
 ```Powershell
+Import-Module AzureAd
 Connect-AzureAD
 ```
 
@@ -48,16 +59,37 @@ $exposedScopes.UserConsentDisplayName = $null
 $exposedScopes.UserConsentDescription = $null
 ```
 
+Configure required resource access to Microsoft Graph API User.Read
+
+```Powershell
+$requiredResourceAccess = New-Object -TypeName Microsoft.Open.AzureAD.Model.RequiredResourceAccess
+# Microsoft Graph API has id '00000003-0000-0000-c000-000000000000'
+$requiredResourceAccess.ResourceAppId = "00000003-0000-0000-c000-000000000000"
+$requiredResourceAccess.ResourceAccess = New-Object System.Collections.Generic.List[Microsoft.Open.AzureAD.Model.ResourceAccess]
+$resourceAccess = New-Object Microsoft.Open.AzureAD.Model.ResourceAccess
+# Scope User.Read has id 'e1fe6dd8-ba31-4d61-89e7-88639da4683d'
+$resourceAccess.Id = "e1fe6dd8-ba31-4d61-89e7-88639da4683d"
+$resourceAccess.Type = "Scope"                                                            
+$requiredResourceAccess.ResourceAccess.Add($resourceAccess) 
+```
+
 Create the Azure AD application for the API.
 
 ```Powershell
-$api = New-AzureADApplication -DisplayName "EchoClaimsAPI" -IdentifierUris "https://echoclaimsapi"
+$api = New-AzureADApplication -DisplayName "MiddleTierAPI" -IdentifierUris "https://middletierapi" -RequiredResourceAccess $requiredResourceAccess
 ```
 
 Do the following when further scopes must be created.
 
 ```Powershell
-$api = New-AzureADApplication -DisplayName "EchoClaimsAPI" -IdentifierUris "https://echoclaimsapi" -Oauth2Permissions $exposedScopes
+$api = New-AzureADApplication -DisplayName "MiddleTierAPI" -IdentifierUris "https://middletierapi" -Oauth2Permissions $exposedScopes -RequiredResourceAccess $requiredResourceAccess
+```
+
+To acquire an access token for the Microsoft Graph API we use the OAuth2 on-behalf-of flow, therefore we need a client secret.
+
+```Powershell
+$secretapi = New-Guid
+New-AzureADApplicationPasswordCredential -ObjectId $api.ObjectId -CustomKeyIdentifier "ClientSecret" -Value $secretapi
 ```
 
 Create a ServicePrincipal for the application
@@ -81,7 +113,7 @@ $resourceAccess.Id = $api.Oauth2Permissions[0].Id
 $resourceAccess.Type = "Scope"                                                            
 $requiredResourceAccess.ResourceAccess.Add($resourceAccess) 
 # Create the Azure AdApplication
-$app = New-AzureADApplication -DisplayName EchoClaimsWebApp -IdentifierUris "https://echoclaimswebapp" -ReplyUrls "http://localhost:5003/signin-oidc" -RequiredResourceAccess $requiredResourceAccess
+$app = New-AzureADApplication -DisplayName "MiddleTierWebApp" -IdentifierUris "https://middletierwebapp" -ReplyUrls "http://localhost:5003/signin-oidc" -RequiredResourceAccess $requiredResourceAccess
 ```
 
 To acquire an access token for the API we use the OAuth2 code grant flow, therefore we need a client secret.
@@ -99,8 +131,6 @@ New-AzureADServicePrincipal -AppId $app.AppId
 
 
 ### Step 3: Known Client Application
-
-This setting is used for bundling consent if you have a solution that contains two parts: a client app and a custom web API app. If you enter the appID of the client app into this value, the user will only have to consent once to the client app. Azure AD will know that consenting to the client means implicitly consenting to the web API and will automatically provision service principals for both the client and web API at the same time. Both the client and the web API app must be registered in the same tenant.
 
 ```Powershell
 $api.KnownClientApplications = New-Object System.Collections.Generic.List[System.String]

@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace aspnetcore_mvc_oauth2_code_grant.Helper
+namespace WebApplication.Helper
 {
     public static class ClaimsPrincipalExtensions
     {
@@ -44,21 +44,7 @@ namespace aspnetcore_mvc_oauth2_code_grant.Helper
 
         public static string GetLoginHint(this ClaimsPrincipal claimsPrincipal)
         {
-            var  displayName = claimsPrincipal.FindFirstValue("preferred_username");
-
-            // Otherwise falling back to the claims brought by an Azure AD v1.0 token
-            if (string.IsNullOrWhiteSpace(displayName))
-            {
-                displayName = claimsPrincipal.FindFirstValue(ClaimsIdentity.DefaultNameClaimType);
-            }
-
-            // Finally falling back to name
-            if (string.IsNullOrWhiteSpace(displayName))
-            {
-                displayName = claimsPrincipal.FindFirstValue("name");
-            }
-
-            return displayName;
+            return claimsPrincipal.FindFirstValue("preferred_username");
         }
 
         public static string GetDomainHint(this ClaimsPrincipal claimsPrincipal)

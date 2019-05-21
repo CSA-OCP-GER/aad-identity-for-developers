@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -31,6 +32,14 @@ namespace aspnetcore_mvc_oauth2_code_grant.Helper
         {
             var app = BuildApp(principal);
             var account = await app.GetAccountAsync(principal.GetMsalAccountId());
+
+            // guest??
+            if (null == account)
+            {
+                var accounts = await app.GetAccountsAsync();
+                account = accounts.FirstOrDefault(a => a.Username == principal.GetLoginHint());
+            }
+
             var token = await app.AcquireTokenSilent(_scopes, account).ExecuteAsync().ConfigureAwait(false);
             return token.AccessToken;
         }

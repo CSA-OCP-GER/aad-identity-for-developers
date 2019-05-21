@@ -2,12 +2,13 @@
 using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using WebApplication.Extensions;
+using WebApi.Extensions;
 
-namespace WebApplication.Helper
+namespace WebApi.Helper
 {
     public class TokenService
     {
@@ -20,10 +21,11 @@ namespace WebApplication.Helper
             _userTokenCacheProviderFactory = userTokenCacheProviderFactory;
         }
 
-        public async Task<AuthenticationResult> GetAccessTokenByAuthorizationCodeAsync(ClaimsPrincipal principal, string code, IEnumerable<string> scopes)
+        public async Task<AuthenticationResult> GetAccessTokenByJwtTokenAsync(ClaimsPrincipal principal, JwtSecurityToken jwtToken, IEnumerable<string> scopes)
         {
             var app = BuildApp(principal);
-            var result = await app.AcquireTokenByAuthorizationCode(scopes, code).ExecuteAsync().ConfigureAwait(false);
+            var userAssertion = new UserAssertion(jwtToken.RawData, "urn:ietf:params:oauth:grant-type:jwt-bearer");
+            var result = await app.AcquireTokenOnBehalfOf(scopes, userAssertion).ExecuteAsync().ConfigureAwait(false);
             return result;
         }
 
@@ -55,7 +57,6 @@ namespace WebApplication.Helper
                 // we only allow users from our tenant
                 .WithAuthority(AzureCloudInstance.AzurePublic, Guid.Parse(_azureAdOptions.TenantId))
                 // reply url
-                .WithRedirectUri(_azureAdOptions.BaseUrl + _azureAdOptions.CallbackPath)
                 .Build();
 
             _userTokenCacheProviderFactory.Create(principal).Initialize(app.UserTokenCache);
