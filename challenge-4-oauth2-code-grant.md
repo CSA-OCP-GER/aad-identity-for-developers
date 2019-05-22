@@ -1,18 +1,22 @@
 # OAuth2 code grant
 
-## Here is what you learn
-- register an Azure AD application
-- authenticate a user and start an OAuth2 code grant flow 
-- use an authorization code to acquire an access token to call Microsoft Graph API
+## Here is what you'll learn
+
+- How to register an Azure AD application
+- How to authenticate an user and start an OAuth2 code grant flow 
+- How to use an authorization code to acquire an access token to call the Microsoft Graph API
 
 ## Create an AAD application
 
-Before you can authenticate an user and acquire an access token for microsoft.graph.com you have to register an application in your Azure AD tenant. You also have to create 
-You can either use the Powershell Module Az or Azure CLI.
+Before you can authenticate an user and acquire an access token for `microsoft.graph.com` you have to register an application in your Azure AD tenant. You also have to create 
 
-### Powershell
+You can either use the PowerShell Module Az or Azure CLI.
 
-``` Powershell
+### PowerShell
+
+TODO: Make sure the password is properly set!
+
+```powershell
 # Import needed Az resource
 Import-Module Az.Resources
 # Create a new credential object
@@ -23,29 +27,44 @@ $app = New-AzADApplication -DisplayName ChallengeIdTokenCode -IdentifierUris htt
 $sp = New-AzADServicePrincipal -ApplicationId $app.ApplicationId -PasswordCredential $credentials
 ```
 
-Get the ID of your current AAD tenant.
+Retrieve and note the ID of your current AAD tenant via:
 
-``` Powershell
+```powershell
 Get-AzContext
 ```
 
+### Azure CLI
+
+First, create a new application, but this time we need to specify a password (we won't generate a secure password in this exercise):
+
+```shell
+az ad app create --display-name challengeidtokencode --reply-urls http://localhost:5001/api/tokenechocode --identifier-uris https://challengeidtokencode --password supersupersupersecret123!
+```
+
+Now, let's create a `Service Principal` with the same id:
+
+```shell
+az ad sp create --id <APP_ID>
+```
+
+TODO: Explain why we do this.
+
 ## Run the Token Echo Server
 
-Open another shell and run the [Token Echo Server](apps/token-echo-server) (/apps/token-echo-server).
-This helper ASP.NET Core tool is used to echo the token issued by your AAD. The tool is listening on port 5001 on your local machine. Tokens are accepted on route http://localhost:5001/api/tokenechocode . That's why we registered an AAD application with reply url http://localhost:5001/api/tokenechocode .
+Open another shell and run the `Token Echo Server` from [`apps/token-echo-server`](apps/token-echo-server) in this repository. This helper ASP.NET Core tool is used to echo the token issued by your AAD. The tool is listening on port 5001 on your local machine. Tokens are accepted on the route `http://localhost:5001/api/tokenechocode`. this is why we initially registered an AAD application with a reply url pointing to `http://localhost:5001/api/tokenechocode`.
 
 ```
 dotnet run
 ``` 
 
-## Create the authentciation request with grant type ```code```
+## Create the authentication request with grant type `code`
 
-Replace tenant id and application id. Open browser und run the request.
+Replace `TENANT_ID` with your AAD Tenant Id and `APPLICATION_ID` with your Application Id. Open a browser and paste the request:
 
 ```
 GET
-https://login.microsoftonline.com/<tenant id>/oauth2/v2.0/authorize?
-client_id=<application id>
+https://login.microsoftonline.com/TENANT_ID/oauth2/v2.0/authorize?
+client_id=APPLICATION_ID
 &response_type=id_token%20code
 &redirect_uri=http%3A%2F%2Flocalhost%3A5001%2Fapi%2Ftokenechocode
 &response_mode=form_post
@@ -53,45 +72,77 @@ client_id=<application id>
 &nonce=1234
 ```
 
+The response should look like this:
+
+```json
+{
+  "code": "OAQABAAIAAADCoMpjJ....",
+  "id_token": "eyJ0eXAiOiJK...",
+  "session_state": "0f76c823-..."
+}
+```
+
+Note down the `code`.
+
 ## Acquire an access token using the authorization code
 
-Copy the authorization code from your browser's output.
-Open Postman or Insomnia and run the following POST request (replace tenant id, application id, authorization code and use the password that you created in the step above for your Service Principal).
+Open Postman or Insomnia and run the following POST request - make sure to replace the following parameters:
 
-``` HTTP
-POST /<tenant id>/oauth2/v2.0/token HTTP/1.1
+* `TENANT_ID` - Your AAD tenant Id
+* `APPLICATION_ID` - Your AAD application Id (from the create step at the top)
+* `AUTHORIZATION_CODE` - The authorization code you just received during the step above
+* `PASSWORD` - Your AAD application's password (specified during the create step at the top)
+
+```HTTP
+POST /TENANT_ID/oauth2/v2.0/token HTTP/1.1
 Host: https://login.microsoftonline.com
 Content-Type: application/x-www-form-urlencoded
 
-client_id=<application id>
+client_id=APPLICATION_ID
 &scope=https%3A%2F%2Fgraph.microsoft.com%2Fuser.read
-&code=<authorization code>
+&code=AUTHORIZATION_CODE
 &redirect_uri=http%3A%2F%2Flocalhost%3A5001%2Fapi%2Ftokenechocode
-&grant_type=<authorization_code>&client_secret=<password>
+&grant_type=authorization_code&client_secret=PASSWORD
 ```
-Now you can copy the access_token from your browser's output.
 
-If you don't want to use Postman or Insomnia you can invoke a web request using Powershell.
+Now you can copy the `access_token` from the response.
 
-```Powershell
+If you don't want to use Postman or Insomnia you can invoke a web request using PowerShell.
+
+```powershell
 $result = Invoke-RestMethod -Uri https://login.microsoftonline.com/<tenant id>/oauth2/token? -Method Post -Body @{"grant_type" = "authorization_code";  "client_id" = "<application id>"; "client_secret" = "<password>"; "scope" = "https://graph.microsoft.com/User.Read"; "code" = "<authorization code>"; "redirect_uri" = "http://localhost:5001/api/tokenechocode"}
 $result.access_token
 ```
 
-
 ## Query Microsoft Graph API
 
-Now query your full profile using Postman or Insomnia to set authorization header.
+Finally you can query your full profile using Postman or Insomnia by properly setting the `Authorization` header and passing in your newly generated `access_token`.
 
 ```HTTP
 GET https://graph.microsoft.com/v1.0/me
-Header: authorization: Bearer <access_token>
+Header: Authorization: Bearer <access_token>
 ```
 
-If you don't want to use Postman or Insomnia, you can invoke a web request with Powershell
+If you don't want to use Postman or Insomnia, you can invoke a web request with PowerShell:
 
-```Powershell
+```powershell
 # Create the authorization header
 $headers = @{'authorization'="Bearer $($result.access_token)"}
 Invoke-WebRequest -Uri https://graph.microsoft.com/v1.0/me -Headers $headers -Method Get
+```
+
+## Cleanup resources
+
+The `Service Principal` should be automatically deleted when we delete the application.
+
+### PowerShell
+
+```powershell
+Remove-AzAdApplication -ApplicationId <applicationid> -Force
+```
+
+### Azure CLI
+
+```shell
+az ad app delete --id <applicationid>
 ```
