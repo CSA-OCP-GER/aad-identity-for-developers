@@ -13,6 +13,7 @@ This repository gives several examples on how to integrate your your application
 * [00 - Registering an application in AAD and receiving an ID Token](challenge-0-oidc-idtoken.md)
 * [01 - Authenticating users in a web app using Azure AD](challenge-1-oidc-idtoken-webapp.md)
 * [02 - Registering an application in AAD and receiving an ID Token via a URL Fragment](challenge-2-oidc-idtoken-fragment.md)
+* [03 - Integrating an Angular SPA (Single page application) with Azure AD](challenge-3-oidc-idtoken-angularspa.md)
 
 ## Authors
 

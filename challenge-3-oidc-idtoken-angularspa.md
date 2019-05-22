@@ -1,65 +1,69 @@
 # Integrate an Angular SPA into Azure AD
 
-## Here is what you learn
+## Here is what you'll learn
 
-- register an Azure AD application
-- authenticate Azure AD users in an Angular SPA
+- How to register an AAD application
+- How to authenticate Azure AD users in an Angular SPA
 
 There is already a simple [Angular SPA demo](apps/angular-spa-oidc-token) implemented in this repository.
-The demo application uses [MSAL for Angular](https://www.npmjs.com/package/@azure/msal-angular). MSAL is a library that gives your app the ability to integrate in Azure AD. 
+The demo application uses [MSAL for Angular](https://www.npmjs.com/package/@azure/msal-angular). MSAL is a library that gives your app the ability to integrate with Azure AD.
 [MSAL for Angular](https://www.npmjs.com/package/@azure/msal-angular) is an Angular wrapper for [MSAL.js](https://github.com/AzureAD/microsoft-authentication-library-for-js).
 
-## Create an Azure AD application
+## Create an AAD application
 
-Before you can authenticate an user you have to register an application in your Azure AD tenant.
-You can either use the Powershell Module Az or Azure CLI.
+Before you can authenticate an user you have to register an application in your AAD tenant.
+You can either use the PowerShell Module Az or Azure CLI.
 
-### Powershell
+### PowerShell
 
-``` Powershell
+```powershell
 New-AzADApplication -DisplayName ChallengeIdTokenAngularSPA -IdentifierUris https://challengeidtokenangularspa -ReplyUrls http://localhost:5003
 ```
-Get the ID of your current Azure AD tenant.
 
-``` Powershell
+Retrieve and note the ID of your current AAD tenant via:
+
+```powershell
 Get-AzContext
 ```
+
 ### Azure CLI
 
-```Shell
-az ad app create --display-name challengeidtokenangularspa --reply-urls http://localhost:5003
+```shell
+az ad app create --display-name challengeidtokenangularspa --reply-urls http://localhost:5003 --identifier-uris https://challengeidtokenangularspa
 ```
 
-Get the ID of your current Azure AD tenant
+Retrieve and note the ID of your current AAD tenant via:
 
-```Shell
+```shell
 az account show 
 ```
 
 ## Run the Angular SPA demo
 
-Before we can run the demo application, we have to replace some values in [app.module.ts](apps/angular-spa-oidc-token/src/app/app.module.ts). Open the file [app.module.ts](apps/angular-spa-oidc-token/src/app/app.module.ts) and replace the following values:
-- clientID -> your application id
-- authority -> your tenant id
+Before we can run the demo application, we have to replace some values in [`app.module.ts`](apps/angular-spa-oidc-token/src/app/app.module.ts). Open the file [`app.module.ts`](apps/angular-spa-oidc-token/src/app/app.module.ts) and replace the following values:
 
-After you have replaced the values open a shell and navigate to the demo application's root folder [angular-spa-oidc-token](apps/angular-spa-oidc-token) an run the following command:
+- `clientID` -> your application id
+- `authority` -> your tenant id
 
-```Shell
+After you have replaced the values open a shell and navigate to the demo application's root folder [`apps/angular-spa-oidc-token`](apps/angular-spa-oidc-token) an run the following command:
+
+```shell
+npm install
 ng serve --port 5003
 ```
-This command brings up the demo application listening on port 5003.
-Open a browser and navigate to http://localhost:5003 .
+
+This command brings up the demo application listening on port 5003. Open a browser and navigate to [`http://localhost:5003`](http://localhost:5003).
 
 ## Cleanup resources
 
-### Powershell
+### PowerShell
 
-```Powershell
+```powershell
 Remove-AzAdApplication -ApplicationId <applicationid> -Force
 ```
 
 ### Azure CLI
 
-```Shell
+```shell
 az ad app delete --id <applicationid>
 ```
