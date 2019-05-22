@@ -1,6 +1,6 @@
 # aad-identity-for-developers
 
-Integrate your applications in Azure Active Directory
+This repository gives several examples on how to integrate your your applications with Azure Active Directory.
 
 ## Prerequisites
 * Node.js
@@ -10,4 +10,10 @@ Integrate your applications in Azure Active Directory
 
 ## Challenges
 
-* [0 - Registering an application in AAD and receiving an ID Token](challenge-0-oidc-idtoken.md)
+* [00 - Registering an application in AAD and receiving an ID Token](challenge-0-oidc-idtoken.md)
+* [01 - Authenticating users in a web app using Azure AD](challenge-1-oidc-idtoken-webapp.md)
+
+## Authors
+
+* Andreas Mock - [@andreasM009](https://twitter.com/andreasm009)
+* Clemens Siebler - [@clemenssiebler](https://twitter.com/clemenssiebler)
