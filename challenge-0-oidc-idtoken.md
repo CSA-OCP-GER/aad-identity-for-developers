@@ -13,12 +13,12 @@ You can either use the PowerShell Module Az or Azure CLI.
 
 ### PowerShell
 
-``` Powershell
+```powershell
 New-AzADApplication -DisplayName ChallengeIdToken -IdentifierUris https://challengeidtoken -ReplyUrls http://localhost:5001/api/tokenecho
 ```
 Retrieve the ID of your current AAD tenant via:
 
-``` Powershell
+```powershell
 Get-AzContext
 ```
 
@@ -75,13 +75,13 @@ If you need further information about the issued claims take a look [here](https
 
 ### PowerShell
 
-```Powershell
+```powershell
 Remove-AzAdApplication -ApplicationId <applicationid> -Force
 ```
 
 ### Azure CLI
 
-```Shell
+```shell
 az ad app delete --id <applicationid>
 ```
 

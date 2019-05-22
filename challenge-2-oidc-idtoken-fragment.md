@@ -19,7 +19,7 @@ New-AzADApplication -DisplayName ChallengeIdTokenFragment -IdentifierUris https:
 
 Retrieve and note the ID of your current AAD tenant via:
 
-``` Powershell
+```powershell
 Get-AzContext
 ```
 
