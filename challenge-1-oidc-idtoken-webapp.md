@@ -23,6 +23,8 @@ We have to use this route as reply url when we create the Azure AD application f
 
 ## Create the Azure AD application
 
+As before, we need to register an application with Azure AD.
+
 ### PowerShell
 
 ```powershell

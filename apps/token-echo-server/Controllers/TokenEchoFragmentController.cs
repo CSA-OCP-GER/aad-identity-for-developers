@@ -26,7 +26,7 @@ namespace token_echo_server.Controllers
         public async Task<IActionResult> EchoToken()
         {            
             await Task.Delay(0);
-            return Ok("The id token is return in the url as fragment.");
+            return Ok("The id token is returned in the URL as a fragment (/api/tokenechofragment#id_token=eyJ...)");
         }
     }
 }

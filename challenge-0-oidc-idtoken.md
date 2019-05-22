@@ -24,13 +24,13 @@ Get-AzContext
 
 ### Azure CLI
 
-```Shell
+```shell
 az ad app create --display-name challengeidtokencli --reply-urls http://localhost:5001/api/tokenecho --identifier-uris https://challengeidtoken
 ```
 
 Retrieve the ID of your current AAD tenant via:
 
-```Shell
+```shell
 az account show 
 ```
 
@@ -52,7 +52,7 @@ dotnet run
 
 ## Create an authentication request
 
-Replace `TENANT_ID` with your TenantId and `APPLICATIONID` with your ApplicationId. Open a browser and paste the modified request.
+Replace `TENANT_ID` with your TenantId and `APPLICATION_ID` with your ApplicationId. Open a browser and paste the modified request.
 
 ```
 // Line breaks are for readability only
