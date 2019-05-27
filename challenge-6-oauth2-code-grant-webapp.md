@@ -14,7 +14,7 @@ You can either use the Powershell Module Az or Azure CLI.
 
 ### Powershell
 
-``` Powershell
+```powershell
 # Create the Azure AD application
 $app = New-AzADApplication -DisplayName ChallengeIdTokenCodeWebApp -IdentifierUris https://challengeidtokencodewebapp -ReplyUrls http://localhost:5004
 #Create an application credential
@@ -25,7 +25,7 @@ $sp = New-AzADServicePrincipal -ApplicationId $app.ApplicationId
 
 Get the ID of your current AAD tenant.
 
-``` Powershell
+```powershell
 Get-AzContext
 ```
 

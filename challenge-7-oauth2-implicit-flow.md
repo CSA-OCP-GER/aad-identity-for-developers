@@ -15,13 +15,13 @@ To allow the oauth2 implicit flow the Powershell module ```AzureAD``` must be us
 
 Open a shell and run it as an administrator and run the command Install-Module
 
-```Powershell
+```powershell
 Install-Module AzureAD -Force
 ```
 
 Create the AzureAD application:
 
-``` Powershell
+```powershell
 Import-Module AzureAD
 Connect-AzureAD
 New-AzureADApplication -DisplayName challengeimplicitgrant -IdentifierUris https://challengeimplicitgrantflow -ReplyUrls http://localhost:5001/api/tokenechofragment -Oauth2AllowImplicitFlow $true
@@ -81,7 +81,8 @@ Header: authorization: Bearer <access_token>
 
 If you don't want to use Postman or Insomnia, you can invoke a web request with Powershell
 
-```Powershell
+```powershell
 # Create the authorization header
 $headers = @{'authorization'="Bearer {acess_token}"}
 Invoke-WebRequest -Uri https://graph.microsoft.com/v1.0/me -Headers $headers -Method Get
+```

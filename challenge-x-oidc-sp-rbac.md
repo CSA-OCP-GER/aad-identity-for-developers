@@ -18,27 +18,27 @@ If you haven't already installed Powershell Az Module or Azure CLI take a look h
 
 #### Create a Service Principal
 
-Open Powershell and login to Azure:
+Open PowerShell and login to Azure:
 
-```Powershell
+```powershell
 Connect-AzAccount
 ```
 
 If you want to change to another Azure subscription do the following:
 
-```Powershell
+```powershell
 Set-AzContext -SubscriptionId <subcriptionid>
 ```
 
 To list available Azure subscription do the following:
 
-```Powershell
+```powershell
 Get-AzSubscription
 ```
 
 After you have logged in and set the right context, create a Service Principal with credentials and assign the Contributor role to it for your subscription.
 
-```Powershell
+```powershell
 # Import needed Az resource
 Import-Module Az.Resources
 # Create a new credential object
@@ -55,18 +55,18 @@ Now a new Service Principal is created that has contributor access to your subsc
 To acquire a token a call to the Azure AD token endpoint must be done using the grant type client-credentials, because we want the token endpoint to issue an access token in the name of an application.
 
 We need the following parameters:
-- TenantId (use ```Powershell Get-AzContext``` to get your Azure AD tenant id)
+- TenantId (use ```powershell Get-AzContext``` to get your Azure AD tenant id)
 - ApplicationId
 - Password 
 
-```Powershell
+```powershell
 $applicationId = $sp.ApplicationId
 $tenantId = "<your tenant id>"
 $result=Invoke-RestMethod -Uri https://login.microsoftonline.com/$tenantId/oauth2/token?api-version=1.0 -Method Post -Body @{"grant_type" = "client_credentials"; "resource" = "https://management.core.windows.net/"; "client_id" = "$applicationId"; "client_secret" = "<your password>" } | ConvertFrom-Json
 ```
 
 The result contains a valid access token that can be used to call the Azure Resource Manager REST API.
-```Powershell
+```powershell
 $result.access_token
 ```
 
@@ -74,7 +74,7 @@ $result.access_token
 
 Now we can create a REST call to list all Azure resource groups.
 
-```Powershell
+```powershell
 # Create the authorization header
 $headers = @{'authorization'="Bearer $($result.access_token)"}
 # SubscriptionId
@@ -89,7 +89,7 @@ $requestResultObject.value
 
 #### Cleanup
 
-```Powershell
+```powershell
 Remove-AzADServicePrincipal -ApplicationId $sp.ApplicationId
 ```
 

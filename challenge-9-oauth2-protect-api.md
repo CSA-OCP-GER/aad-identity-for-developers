@@ -27,7 +27,7 @@ The API is running on port 5002 and the Web application is running on port 5003.
 
 Connect to AzureAd Instance:
 
-```Powershell
+```powershell
 Connect-AzureAD
 ```
 
@@ -50,40 +50,40 @@ $exposedScopes.UserConsentDescription = $null
 
 Create the Azure AD application for the API.
 
-```Powershell
+```powershell
 $api = New-AzureADApplication -DisplayName "EchoClaimsAPI" -IdentifierUris "https://echoclaimsapi"
 ```
 
 Do the following when further scopes must be created.
 
-```Powershell
+```powershell
 $api = New-AzureADApplication -DisplayName "EchoClaimsAPI" -IdentifierUris "https://echoclaimsapi" -Oauth2Permissions $exposedScopes
 ```
 
 Create a ServicePrincipal for the application
 
-```Powershell
+```powershell
 New-AzureADServicePrincipal -AppId $api.AppId
 ```
 
 
 ### Step 2: Register an Azure AD application for the Web application
 
-```Powershell
+```powershell
 # Create the Azure AdApplication
 $app = New-AzureADApplication -DisplayName EchoClaimsWebApp -IdentifierUris "https://echoclaimswebapp" -ReplyUrls "http://localhost:5003/signin-oidc"
 ```
 
 To acquire an access token for the API we use the OAuth2 code grant flow, therefore we need a client secret.
 
-```Powershell
+```powershell
 $secret = New-Guid
 New-AzureADApplicationPasswordCredential -ObjectId $app.ObjectId -CustomKeyIdentifier "ClientSecret" -Value $secret
 ```
 
 Create a ServicePrincipal for the application
 
-```Powershell
+```powershell
 New-AzureADServicePrincipal -AppId $app.AppId
 ```
 
@@ -98,7 +98,7 @@ Edit the file [appsettings.json](apps/aspnetcore-protect-api/WebApi/appsettings.
 
 In the shell navigate to the folder /apps/aspnetcore-protect-api/WebApi and run the following dotnet command
 
-```Shell
+```shell
 dotnet run
 ```
 The API is listening on port 5002.

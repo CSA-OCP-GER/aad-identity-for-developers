@@ -37,7 +37,7 @@ The API is running on port 5002 and the Web application is running on port 5003.
 
 Connect to AzureAd Instance:
 
-```Powershell
+```powershell
 Import-Module AzureAd
 Connect-AzureAD
 ```
@@ -61,7 +61,7 @@ $exposedScopes.UserConsentDescription = $null
 
 Configure required resource access to Microsoft Graph API User.Read
 
-```Powershell
+```powershell
 $requiredResourceAccess = New-Object -TypeName Microsoft.Open.AzureAD.Model.RequiredResourceAccess
 # Microsoft Graph API has id '00000003-0000-0000-c000-000000000000'
 $requiredResourceAccess.ResourceAppId = "00000003-0000-0000-c000-000000000000"
@@ -75,26 +75,26 @@ $requiredResourceAccess.ResourceAccess.Add($resourceAccess)
 
 Create the Azure AD application for the API.
 
-```Powershell
+```powershell
 $api = New-AzureADApplication -DisplayName "MiddleTierAPI" -IdentifierUris "https://middletierapi" -RequiredResourceAccess $requiredResourceAccess
 ```
 
 Do the following when further scopes must be created.
 
-```Powershell
+```powershell
 $api = New-AzureADApplication -DisplayName "MiddleTierAPI" -IdentifierUris "https://middletierapi" -Oauth2Permissions $exposedScopes -RequiredResourceAccess $requiredResourceAccess
 ```
 
 To acquire an access token for the Microsoft Graph API we use the OAuth2 on-behalf-of flow, therefore we need a client secret.
 
-```Powershell
+```powershell
 $secretapi = New-Guid
 New-AzureADApplicationPasswordCredential -ObjectId $api.ObjectId -CustomKeyIdentifier "ClientSecret" -Value $secretapi
 ```
 
 Create a ServicePrincipal for the application
 
-```Powershell
+```powershell
 New-AzureADServicePrincipal -AppId $api.AppId
 ```
 
@@ -103,7 +103,7 @@ New-AzureADServicePrincipal -AppId $api.AppId
 
 To access the API in the web application an AzureAD application must be registered with required resource access right to access the API.
 
-```Powershell
+```powershell
 # required resource access (the API)
 $requiredResourceAccess = New-Object -TypeName Microsoft.Open.AzureAD.Model.RequiredResourceAccess
 $requiredResourceAccess.ResourceAppId = $api.AppId
@@ -118,21 +118,21 @@ $app = New-AzureADApplication -DisplayName "MiddleTierWebApp" -IdentifierUris "h
 
 To acquire an access token for the API we use the OAuth2 code grant flow, therefore we need a client secret.
 
-```Powershell
+```powershell
 $secret = New-Guid
 New-AzureADApplicationPasswordCredential -ObjectId $app.ObjectId -CustomKeyIdentifier "ClientSecret" -Value $secret
 ```
 
 Create a ServicePrincipal for the application
 
-```Powershell
+```powershell
 New-AzureADServicePrincipal -AppId $app.AppId
 ```
 
 
 ### Step 3: Known Client Application
 
-```Powershell
+```powershell
 $api.KnownClientApplications = New-Object System.Collections.Generic.List[System.String]
 $api.KnownClientApplications.Add($app.AppId)
 Set-AzureADApplication -ObjectId $api.ObjectId -KnownClientApplications $api.KnownClientApplications
@@ -149,7 +149,7 @@ Edit the file [appsettings.json](apps/aspnetcore-protect-api/WebApi/appsettings.
 
 In the shell navigate to the folder /apps/aspnetcore-protect-api/WebApi and run the following dotnet command
 
-```Shell
+```shell
 dotnet run
 ```
 The API is listening on port 5002.

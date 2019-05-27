@@ -15,14 +15,14 @@ To allow the oauth2 implicit flow the Powershell module ```AzureAD``` must be us
 
 Open a shell and run it as an administrator and run the command Install-Module
 
-```Powershell
+```powershell
 Install-Module AzureAD -Force
 ```
 
 Create the AzureAD application:
 
-``` Powershell
-Impprt-Module AzureAD
+```powershell
+Import-Module AzureAD
 Connect-AzureAD
 New-AzureADApplication -DisplayName challengeimplicitgrantangularspa -IdentifierUris https://challengeimplicitgrantflowangularspa -ReplyUrls http://localhost:5003 -Oauth2AllowImplicitFlow $true
 ```
@@ -34,7 +34,7 @@ Open and edit the file [app.modules.ts](/apps/angular-spa-oauth2-implicit-flow/s
 Replace ApplicationId and TenantId.
 Run the ```ng serve``` command and start the application on port 5003.
 
-```Shell
+```shell
 ng serve --port 5003
 ```
 
