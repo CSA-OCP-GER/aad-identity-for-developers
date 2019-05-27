@@ -14,17 +14,13 @@ You can either use the PowerShell Module Az or Azure CLI.
 
 ### PowerShell
 
-TODO: Make sure the password is properly set!
-
 ```powershell
 # Import needed Az resource
 Import-Module Az.Resources
 # Create a new credential object
 $credentials = New-Object Microsoft.Azure.Commands.ActiveDirectory.PSADPasswordCredential -Property @{ StartDate=Get-Date; EndDate=Get-Date -Year 2020; Password="<your password>"}
 # Create the Azure AD application
-$app = New-AzADApplication -DisplayName ChallengeIdTokenCode -IdentifierUris https://challengeidtokencode -ReplyUrls http://localhost:5001/api/tokenechocode
-# Create a Service Principal for your application
-$sp = New-AzADServicePrincipal -ApplicationId $app.ApplicationId -PasswordCredential $credentials
+$app = New-AzADApplication -DisplayName ChallengeIdTokenCode -IdentifierUris https://challengeidtokencode -ReplyUrls http://localhost:5001/api/tokenechocode -PasswordCredential $credentials
 ```
 
 Retrieve and note the ID of your current AAD tenant via:
@@ -40,14 +36,6 @@ First, create a new application, but this time we need to specify a password (we
 ```shell
 az ad app create --display-name challengeidtokencode --reply-urls http://localhost:5001/api/tokenechocode --identifier-uris https://challengeidtokencode --password supersupersupersecret123!
 ```
-
-Now, let's create a `Service Principal` with the same id:
-
-```shell
-az ad sp create --id <APP_ID>
-```
-
-TODO: Explain why we do this.
 
 ## Run the Token Echo Server
 
@@ -65,6 +53,17 @@ Replace `TENANT_ID` with your AAD Tenant Id and `APPLICATION_ID` with your Appli
 GET
 https://login.microsoftonline.com/TENANT_ID/oauth2/v2.0/authorize?
 client_id=APPLICATION_ID
+&response_type=id_token%20code
+&redirect_uri=http%3A%2F%2Flocalhost%3A5001%2Fapi%2Ftokenechocode
+&response_mode=form_post
+&scope=openid%20profile%20https%3A%2F%2Fgraph.microsoft.com%2Fuser.read
+&nonce=1234
+```
+
+```
+GET
+https://login.microsoftonline.com/2a151364-d43b-4192-b727-ab106e85ccdd/oauth2/v2.0/authorize?
+client_id=dfdb5788-a05c-4f78-be07-3241e9d873f7
 &response_type=id_token%20code
 &redirect_uri=http%3A%2F%2Flocalhost%3A5001%2Fapi%2Ftokenechocode
 &response_mode=form_post

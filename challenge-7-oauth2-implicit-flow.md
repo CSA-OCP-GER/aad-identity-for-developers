@@ -22,7 +22,7 @@ Install-Module AzureAD -Force
 Create the AzureAD application:
 
 ``` Powershell
-Impprt-Module AzureAD
+Import-Module AzureAD
 Connect-AzureAD
 New-AzureADApplication -DisplayName challengeimplicitgrant -IdentifierUris https://challengeimplicitgrantflow -ReplyUrls http://localhost:5001/api/tokenechofragment -Oauth2AllowImplicitFlow $true
 ```

@@ -15,17 +15,13 @@ You can either use the PowerShell Module Az or Azure CLI.
 
 ### PowerShell
 
-TODO: Make sure the password is properly set!
-
 ```powershell
 # Import needed Az resource
 Import-Module Az.Resources
 # Create a new credential object
 $credentials = New-Object Microsoft.Azure.Commands.ActiveDirectory.PSADPasswordCredential -Property @{ StartDate=Get-Date; EndDate=Get-Date -Year 2020; Password="<your password>"}
 # Create the Azure AD application
-$app = New-AzADApplication -DisplayName ChallengeIdTokenCode -IdentifierUris https://challengeidtokencode -ReplyUrls http://localhost:5001/api/tokenechocode
-# Create a Service Principal for your application
-$sp = New-AzADServicePrincipal -ApplicationId $app.ApplicationId -PasswordCredential $credentials
+$app = New-AzADApplication -DisplayName ChallengeIdTokenCode -IdentifierUris https://challengeidtokencode -ReplyUrls http://localhost:5001/api/tokenechocode -PasswordCredential $credentials
 ```
 
 Retrieve and note the ID of your current AAD tenant via:
@@ -41,14 +37,6 @@ First, create a new application, but this time we need to specify a password (we
 ```shell
 az ad app create --display-name challengeidtokencode --reply-urls http://localhost:5001/api/tokenechocode --identifier-uris https://challengeidtokencode --password supersupersupersecret123!
 ```
-
-Now, let's create a `Service Principal` with the same id:
-
-```shell
-az ad sp create --id <APP_ID>
-```
-
-TODO: Explain why we do this.
 
 ## Run the Token Echo Server
 
