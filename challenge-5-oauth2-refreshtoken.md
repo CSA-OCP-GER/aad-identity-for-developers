@@ -1,4 +1,4 @@
-# OAuth2 code grant
+# OAuth2 code grant with refresh tokens
 
 ## Here is what you'll learn
 
@@ -9,7 +9,7 @@
 
 ## Create an AAD application
 
-Before you can authenticate an user and acquire an access token for `microsoft.graph.com` you have to register an application in your Azure AD tenant. You also have to create 
+Before you can authenticate an user and acquire an access token for `microsoft.graph.com` you have to register an application in your Azure AD tenant. TODO: Missing instructions for generating passwords, etc.
 
 You can either use the PowerShell Module Az or Azure CLI.
 
@@ -75,9 +75,9 @@ The response should look like this:
 
 Note down the `code`.
 
-## Acquire an access token and refresh token using the authorization code
+## Acquire an initial access token and refresh token using the authorization code
 
-Open Postman or Insomnia and run the following POST request - make sure to replace the following parameters:
+First we need to retrieve an initial `access_token` and `refresh_token`. Open Postman or Insomnia and run the following POST request - make sure to replace the following parameters:
 
 * `TENANT_ID` - Your AAD tenant Id
 * `APPLICATION_ID` - Your AAD application Id (from the create step at the top)
@@ -89,6 +89,7 @@ POST /TENANT_ID/oauth2/v2.0/token HTTP/1.1
 Host: https://login.microsoftonline.com
 Content-Type: application/x-www-form-urlencoded
 
+Body:
 client_id=APPLICATION_ID
 &scope=offline_access%20https%3A%2F%2Fgraph.microsoft.com%2Fuser.read
 &code=AUTHORIZATION_CODE
@@ -97,9 +98,23 @@ client_id=APPLICATION_ID
 &client_secret=PASSWORD // NOTE: Only required for web apps
 ```
 
+The response should look something like this:
+
+```json
+{
+    "token_type": "Bearer",
+    "scope": "openid profile email https://graph.microsoft.com/User.Read",
+    "expires_in": 3600,
+    "ext_expires_in": 3600,
+    "access_token": "eyJ0eXAiOiJKV1Qi...",
+    "refresh_token": "OAQABAAAAAADCoMpjJXrxTq9VG9...",
+    "id_token": "eyJ0eXAiOiJKV1QiL..."
+}
+```
+
 Now you can copy the `access_token` and `refresh_token`from the response.
 
-If you don't want to use Postman or Insomnia you can invoke a web request using PowerShell.
+If you don't want to use Postman or Insomnia you can also invoke a web request using PowerShell:
 
 ```powershell
 $result = Invoke-RestMethod -Uri https://login.microsoftonline.com/<tenant id>/oauth2/token? -Method Post -Body @{"grant_type" = "authorization_code";  "client_id" = "<application id>"; "client_secret" = "<password>"; "scope" = "https://graph.microsoft.com/User.Read"; "code" = "<authorization code>"; "redirect_uri" = "http://localhost:5001/api/tokenechocode"}
@@ -108,14 +123,14 @@ $result.access_token
 
 ## Query Microsoft Graph API
 
-Finally you can query your full profile using Postman or Insomnia by properly setting the `Authorization` header and passing in your newly generated `access_token`.
+Finally you can query your full profile using Postman or Insomnia by properly setting the `Authorization` header and passing in your newly generated `access_token`. As noted in the response, this token will expire after 3600 seconds.
 
 ```HTTP
 GET https://graph.microsoft.com/v1.0/me
 Header: Authorization: Bearer <access_token>
 ```
 
-If you don't want to use Postman or Insomnia, you can invoke a web request with PowerShell:
+If you don't want to use Postman or Insomnia, you can also invoke a web request with PowerShell:
 
 ```powershell
 # Create the authorization header
@@ -123,11 +138,14 @@ $headers = @{'authorization'="Bearer $($result.access_token)"}
 Invoke-WebRequest -Uri https://graph.microsoft.com/v1.0/me -Headers $headers -Method Get
 ```
 
-## Acquire an access token using the refresh token.
+## Acquire an access token using the refresh token
 
-With a refresh token you can acquire access token for all protected resources as lon as the signed-in user has granted consent.
+With a `refresh_token` you can acquire a new `access_token` for all protected resources as long as the signed-in user has granted consent or until the `refresh_token` times out. This allows us to make API calls on behalf of the user after the initial `access_token` expires (default is 3600 seconds). These two links will be helpful understanding the use and lifetime of these tokens:
 
-Open Postman or Insomnia and run the following POST request - make sure to replace the following parameters:
+* [Token Types](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-configurable-token-lifetimes#token-types) - What is an `access_token` and `refresh_token` 
+* [Token Lifetime properties](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-configurable-token-lifetimes#configurable-token-lifetime-properties).
+
+Open Postman or Insomnia and run the following `POST` request - make sure to replace the following parameters:
 
 * `TENANT_ID` - Your AAD tenant Id
 * `APPLICATION_ID` - Your AAD application Id (from the create step at the top)
@@ -139,6 +157,7 @@ POST /TENANT_ID/oauth2/v2.0/token HTTP/1.1
 Host: https://login.microsoftonline.com
 Content-Type: application/x-www-form-urlencoded
 
+Body:
 client_id=APPLICATION_ID
 &scope=https%3A%2F%2Fgraph.microsoft.com%2Fuser.read
 &refresh_token=REFRESH_TOKEN
@@ -146,14 +165,28 @@ client_id=APPLICATION_ID
 &client_secret=PASSWORD      // NOTE: Only required for web apps
 ```
 
-If you don't want to use Postman or Insomnia you can invoke a web request using PowerShell.
+The response should look very similar to what we saw before:
+
+```json
+{
+    "token_type": "Bearer",
+    "scope": "openid profile email https://graph.microsoft.com/User.Read",
+    "expires_in": 3600,
+    "ext_expires_in": 3600,
+    "access_token": "eyJ0eXAiOiJKV1QiLCJub2...",
+    "refresh_token": "OAQABAAAAAADCoMpjJXrxTq...",
+    "id_token": "eyJ0eXAiOiJKV1QiLCJh..."
+}
+```
+
+If you don't want to use Postman or Insomnia you can also invoke a web request using PowerShell.
 
 ```powershell
 $result = Invoke-RestMethod -Uri https://login.microsoftonline.com/<tenant id>/oauth2/token? -Method Post -Body @{"grant_type" = "refresh_token";  "client_id" = "<application id>"; "client_secret" = "<password>"; "scope" = "https://graph.microsoft.com/User.Read"; "refresh_token" = "<refresh_token>"}
 $result.access_token
 ```
 
-Now you can copy the `access_token` and call Microsoft Graph API again.
+Now you can copy the `access_token` and call the Microsoft Graph API again.
 
 ## Cleanup resources
 

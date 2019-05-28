@@ -8,7 +8,7 @@
 
 ## Create an AAD application
 
-Before you can authenticate an user and acquire an access token for `microsoft.graph.com` you have to register an application in your Azure AD tenant. You also have to create 
+Before you can authenticate an user and acquire an access token for `microsoft.graph.com` you have to register an application in your Azure AD tenant. TODO: Missing instructions for generating passwords, etc.
 
 You can either use the PowerShell Module Az or Azure CLI.
 
@@ -94,9 +94,23 @@ client_id=APPLICATION_ID
 &grant_type=authorization_code&client_secret=PASSWORD
 ```
 
+The response should look something like this:
+
+```json
+{
+    "token_type": "Bearer",
+    "scope": "openid profile email https://graph.microsoft.com/User.Read",
+    "expires_in": 3600,
+    "ext_expires_in": 3600,
+    "access_token": "eyJ0eXAiOiJKV1Qi...",
+    "refresh_token": "OAQABAAAAAADCoMpjJXrxTq9VG9...",
+    "id_token": "eyJ0eXAiOiJKV1QiL..."
+}
+```
+
 Now you can copy the `access_token` from the response.
 
-If you don't want to use Postman or Insomnia you can invoke a web request using PowerShell.
+If you don't want to use Postman or Insomnia you can also invoke a web request using PowerShell:
 
 ```powershell
 $result = Invoke-RestMethod -Uri https://login.microsoftonline.com/<tenant id>/oauth2/token? -Method Post -Body @{"grant_type" = "authorization_code";  "client_id" = "<application id>"; "client_secret" = "<password>"; "scope" = "https://graph.microsoft.com/User.Read"; "code" = "<authorization code>"; "redirect_uri" = "http://localhost:5001/api/tokenechocode"}
