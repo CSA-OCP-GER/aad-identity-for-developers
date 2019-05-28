@@ -41,7 +41,7 @@ az ad app create --display-name challengeidtokencode --reply-urls http://localho
 
 Open another shell and run the `Token Echo Server` from [`apps/token-echo-server`](apps/token-echo-server) in this repository. This helper ASP.NET Core tool is used to echo the token issued by your AAD. The tool is listening on port 5001 on your local machine. Tokens are accepted on the route `http://localhost:5001/api/tokenechocode`. this is why we initially registered an AAD application with a reply url pointing to `http://localhost:5001/api/tokenechocode`.
 
-```
+```shell
 dotnet run
 ``` 
 
@@ -53,17 +53,6 @@ Replace `TENANT_ID` with your AAD Tenant Id and `APPLICATION_ID` with your Appli
 GET
 https://login.microsoftonline.com/TENANT_ID/oauth2/v2.0/authorize?
 client_id=APPLICATION_ID
-&response_type=id_token%20code
-&redirect_uri=http%3A%2F%2Flocalhost%3A5001%2Fapi%2Ftokenechocode
-&response_mode=form_post
-&scope=openid%20profile%20https%3A%2F%2Fgraph.microsoft.com%2Fuser.read
-&nonce=1234
-```
-
-```
-GET
-https://login.microsoftonline.com/2a151364-d43b-4192-b727-ab106e85ccdd/oauth2/v2.0/authorize?
-client_id=dfdb5788-a05c-4f78-be07-3241e9d873f7
 &response_type=id_token%20code
 &redirect_uri=http%3A%2F%2Flocalhost%3A5001%2Fapi%2Ftokenechocode
 &response_mode=form_post
@@ -97,6 +86,7 @@ POST /TENANT_ID/oauth2/v2.0/token HTTP/1.1
 Host: https://login.microsoftonline.com
 Content-Type: application/x-www-form-urlencoded
 
+Body:
 client_id=APPLICATION_ID
 &scope=https%3A%2F%2Fgraph.microsoft.com%2Fuser.read
 &code=AUTHORIZATION_CODE
