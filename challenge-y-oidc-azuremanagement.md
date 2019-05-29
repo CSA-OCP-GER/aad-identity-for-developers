@@ -42,6 +42,15 @@ Retrieve and note the ID of your current AAD tenant via:
 ```shell
 az account show 
 ```
+## Run and inspect the demo application
 
-// TODO...
-- create app ...
+The demo application for this challenge can be found in this repository. Open a shell and run the application from [apps/aspnetcore-oidc-azuremanagement] apps/aspnetcore-oidc-azuremanagement.
+
+```shell
+dotnet run
+```
+
+Open a browser and navigate to http://localhost:5003. When you sign in you have to grant consent for accessing the APIs `Azure Management Service` and `Microsoft Graph`.
+
+### Create Service Principal button
+By clicking the button `Create Service Principal` the controller action `CreateServicePrincipal` from the controller `xyz` is toggled.
