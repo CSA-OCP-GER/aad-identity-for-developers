@@ -17,7 +17,7 @@ This repository gives several examples on how to integrate your your application
 * [04 - OAuth2 - Code Grant Flow](challenge-4-oauth2-code-grant.md)
 * [05 - OAuth2 - Code Grant Flow with refresh tokens](challenge-5-oauth2-refreshtoken.md)
 * 06 - TODO
-* 07 - TODO
+* [07 - OAuth2 - Implicit Grant Flow](challenge-7-oauth2-implicit-flow.md)
 * 08 - TODO
 * [09 - OAuth2 - Create an API that is protected by Azure AD](challenge-9-oauth2-protect-api.md)
 
