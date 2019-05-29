@@ -36,13 +36,13 @@ Connect-AzureAD
 To expose an API application in Azure AD, OAuth 2.0 permission scopes must be exposed.
 When creating an Azure AD application using the `New-AzureADApplication` Cmdlet, a scope named `user_impersonation` is created automatically.
 
-First, create a scope using the following PowerShell code:
+If you want to create additional scopes, you can use following PowerShell code:
 
 ```powershell
 $exposedScopes = New-Object -TypeName Microsoft.Open.AzureAD.Model.OAuth2Permission
 $exposedScopes.Type = "User"
 $exposedScopes.AdminConsentDisplayName = "AccessEcho Claims API"
-$exposedScopes.AdminConsentDescription = "Access Echo Claims API on behalf of signed-in users to echo claims."
+$exposedScopes.AdminConsentDescription = "AccessEcho Claims API on behalf of signed-in users to echo claims."
 $exposedScopes.Id = $(New-Guid)
 $exposedScopes.IsEnabled = $true
 $exposedScopes.Value = "myscope"
@@ -50,13 +50,13 @@ $exposedScopes.UserConsentDisplayName = $null
 $exposedScopes.UserConsentDescription = $null
 ```
 
-Next, create the Azure AD application for the API:
+Next, create the Azure AD application for the API (without adding additional scopes):
 
 ```powershell
 $api = New-AzureADApplication -DisplayName "EchoClaimsAPI" -IdentifierUris "https://echoclaimsapi"
 ```
 
-Do the following if you want to add further scopes:
+Do the following if you want to add one or more scopes:
 
 ```powershell
 $api = New-AzureADApplication -DisplayName "EchoClaimsAPI" -IdentifierUris "https://echoclaimsapi" -Oauth2Permissions $exposedScopes
@@ -132,4 +132,18 @@ The View [ConsentRequired](apps/aspnetcore-protect-api/WebApplication/Views/Home
 
 ## Cleanup resources
 
-TODO
+The `Service Principal` should be automatically deleted when we delete the application. Be sure to delete both the Web App and the Web API!
+
+### PowerShell
+
+```powershell
+Remove-AzAdApplication -ApplicationId $api.AppId -Force
+Remove-AzAdApplication -ApplicationId $app.AppId -Force
+```
+
+### Azure CLI
+
+```shell
+az ad app delete --id <applicationid_webapi>
+az ad app delete --id <applicationid_webapp>
+```
