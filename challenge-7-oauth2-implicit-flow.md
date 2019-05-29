@@ -2,7 +2,7 @@
 
 ## Here is what you'll learn
 
-- How to register an Azure AD application and allow the OAuth2 Implicit Flow
+- How to register an Azure AD application and allow the OAuth2 Implicit Grant Flow
 - How to authenticate an user and start an OAuth2 implicit flow to acquire an access token to call Microsoft Graph API
 
 ## Create an Azure AD application and enable Implicit grant flow
@@ -13,7 +13,7 @@ Before you can authenticate an user and acquire an access token for `microsoft.g
 
 To allow the OAuth2 implicit flow the PowerShell module `AzureAD` must be used. The `Azure Shell` within the Azure Portal already has it pre-installed. If you want to run the code on local machine and haven't already installed the Azure AD module do the following:
 
-Open a shell and run it as an administrator and run the command Install-Module
+Open a shell and run it as an administrator and run the command `Install-Module`:
 
 ```powershell
 Install-Module AzureAD -Force
@@ -32,7 +32,7 @@ New-AzureADApplication -DisplayName challengeimplicitgrant -IdentifierUris https
 Firstly, create a new Azure AD Application, this time with `oauth2-allow-implicit-flow` enabled:
 
 ```shell
-az ad app create --display-name challengeimplicitgrant --reply-urls http://localhost:5001/api/tokenechofragment --identifier-uris https://challengeimplicitgrantflow_clemens --oauth2-allow-implicit-flow true
+az ad app create --display-name challengeimplicitgrant --reply-urls http://localhost:5001/api/tokenechofragment --identifier-uris https://challengeimplicitgrantflow --oauth2-allow-implicit-flow true
 ```
 
 As before, note down the `appId`. Next, retrieve and note the ID of your current AAD tenant via:

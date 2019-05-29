@@ -18,7 +18,7 @@ This repository gives several examples on how to integrate your your application
 * [05 - OAuth2 - Code Grant Flow with refresh tokens](challenge-5-oauth2-refreshtoken.md)
 * 06 - TODO
 * [07 - OAuth2 - Implicit Grant Flow](challenge-7-oauth2-implicit-flow.md)
-* 08 - TODO
+* [08 - OAuth2 - Implicit Grant Flow in a SPA (Single Page Application)](challenge-8-oauth2-implicit-flow-angularspa.md)
 * [09 - OAuth2 - Create an API that is protected by Azure AD](challenge-9-oauth2-protect-api.md)
 
 
