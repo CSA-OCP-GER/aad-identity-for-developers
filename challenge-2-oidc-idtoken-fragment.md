@@ -3,8 +3,10 @@
 ## Here is what you'll learn
 
 - How to register an AAD application
-- How to create an OpenIdConnect request to authenticate an user
+- How to create an Open ID Connect request to authenticate an user
 - How to receive an ID token in a [Fragment URL](https://en.wikipedia.org/wiki/Fragment_identifier) to query information about the authenticated user
+
+This is very similar to challenge 0, except that this time we will receive the `id_token` through a fragment URL instead in the body.
 
 ## Create an AAD application
 
@@ -67,7 +69,7 @@ If you need further information about the issued claims take a look [here](https
 
 ## Cleanup resources
 
-### Powershell
+### PowerShell
 
 ```powershell
 Remove-AzAdApplication -ApplicationId <applicationid> -Force

@@ -3,7 +3,9 @@
 ## Here is what you'll learn
 
 - How to register an AAD application
-- How to authenticate Azure AD users in an Angular SPA
+- How to authenticate Azure AD users in an Angular SPA (Single Page Application)
+
+This challenge is similar to challenge 2, but uses an Angular instead of .NET Core.
 
 There is already a simple [Angular SPA demo](apps/angular-spa-oidc-token) implemented in this repository.
 The demo application uses [MSAL for Angular](https://www.npmjs.com/package/@azure/msal-angular). MSAL is a library that gives your app the ability to integrate with Azure AD.
