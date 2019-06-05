@@ -2,14 +2,25 @@
 
 ## Here is what you'll learn
 
-- How to register an AAD application
-- How to create an `OpenIdConnect` request to authenticate an user
-- How to receive an ID token to get information about the authenticated user
+- How to register an application in AAD
+- How to use the OpenID Connect protocol for authenticating an user
+- How to receive an `id_token` with basic profile information about the authenticated user
+
+Here is an high-level overview of the authentication process:
+
+![alt-text](images/oidc-id-token.png)
+
+In short:
+
+1. We show the user a sign-in button
+1. The sign-in button forwards to the `.../oauth2/v2.0/authorize` URL, including the ID of our application and the ID of our AAD tenant
+1. The user logs in and consents to letting us access his or her profile
+1. Our AAD tenants forwards us to the callback URL and includes an `id_token`, which contains basic profile information of the user (in form of a JWT (JSON Web Token))
+1. Lastly, we could validate the returned `id_token` using its signature (not shown here)
 
 ## Create an AAD application
 
-Before you can authenticate an user you have to register an application in your AAD tenant.
-You can either use the PowerShell Module Az or Azure CLI.
+Before we can authenticate an user we have to register an application in our AAD tenant. We can either use the PowerShell Module Az or the Azure CLI.
 
 ### PowerShell
 
@@ -38,13 +49,14 @@ az account show
 
 Note the `appId` value in the response - this is the id under which your AAD application has been registered.
 
-In the Azure Portal, you can see your new app registration under `AAD --> App Registrations --> Owned applications`:
+In the Azure Portal, we can see your new app registration under `AAD --> App Registrations --> Owned applications`:
 
 ![alt-text](images/aad_app_registration.png)
 
 ## Run the Token Echo Server
 
-Open another shell and run the Token Echo Server from [`apps/token-echo-server`](apps/token-echo-server) in this repository. This helper ASP.NET Core tool is used to echo the token issued by your AAD. The tool is listening on port 5001 on your local machine. Tokens are accepted on the route `http://localhost:5001/api/tokenecho`. this is why we initially registered an AAD application with a reply url pointing to `http://localhost:5001/api/tokenecho`.
+Open another shell and run the Token Echo Server from [`apps/token-echo-server`](apps/token-echo-server) in this repository. This helper ASP.NET Core tool is used to echo the token issued by your AAD and "simulates" our website or server backend that would receive the `id_token`.
+The tool is listening on port 5001 on your local machine. Tokens are accepted on the route `http://localhost:5001/api/tokenecho`. this is why we initially registered an AAD application with a reply url pointing to `http://localhost:5001/api/tokenecho`.
 
 ```
 dotnet run
@@ -87,4 +99,4 @@ az ad app delete --id <applicationid>
 
 ## Summary
 
-This challenge showed how to create an new application in AAD and how an `OpenIdConnect` request is created to authenticate an user.
+This challenge showed how to create an new application in AAD and how an authentication request for authenticating an user can be created using the Open ID Connect protocol. The full process is described [here](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-protocols-oidc).
