@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.352
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "aspnetcore-oidc-azuremanagement", "aspnetcore-oidc-azuremanagement\aspnetcore-oidc-azuremanagement.csproj", "{176EE397-F82F-46F8-AA89-59AF22F142F4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{176EE397-F82F-46F8-AA89-59AF22F142F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{176EE397-F82F-46F8-AA89-59AF22F142F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{176EE397-F82F-46F8-AA89-59AF22F142F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{176EE397-F82F-46F8-AA89-59AF22F142F4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {13810175-A576-4CC1-9B34-7DF592E0D020}
+	EndGlobalSection
+EndGlobal

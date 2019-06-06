@@ -1,0 +1,49 @@
+﻿@{
+    ViewData["Title"] = "Service Principal Page";
+}
+
+@using aspnetcore_oidc_azuremanagement.Models
+@model List<CreatedServicePrincipal>
+
+<div class="text-center">
+    <h1 class="display-4">Service Principal</h1>
+    <p>Create a Service Principal and assign "Contributor" role at subscription scope.</p>
+</div>
+<div class="row">
+    <a class="col-md-2" asp-controller="ServicePrincipal" asp-action="Create">Create new</a>
+</div>
+@if (Model.Count != 0)
+{
+    <div class="text-center">
+        <form asp-controller="ServicePrincipal" asp-action="Delete" method="post" role="form" class="form-horizontal">
+            <div class="row row text-left font-weight-bold">
+                <label class="col-md-5 control-label">Service Principal</label>
+                <label class="col-md-3 control-label">Subscription</label>
+                <label class="col-md-4 control-label">Subscription Id</label>
+            </div>
+            <div class="row text-left">
+                <div class="col">
+                    @for (var i = 0; i < Model.Count; i++)
+                    {
+                        <div class="row">
+                            <div class="checkboxlist col-md-5">
+                                <input asp-for="@Model[i].Checked" type="checkbox" />
+                                <a asp-controller="ServicePrincipal" asp-action="GetResourceGroups" asp-route-servicePrincipalId="@Model[i].Id">@Model[i].Displayname</a>
+                             </div>
+                            <label class="col-md-3">@Model[i].SubscriptionName</label>
+                            <label class="col-md-4">@Model[i].SubscriptionId</label>
+                            <div>
+                                <input asp-for="@Model[i].Id" type="hidden" />
+                                <input asp-for="@Model[i].Displayname" type="hidden" />
+                            </div>
+                        </div>
+                    }
+                </div>                
+            </div>
+            <div class="row">
+         
+                <input id="Submit1" type="submit" value="Delete" class="btn-primary col-md-2" />
+            </div>
+        </form>
+    </div>
+}

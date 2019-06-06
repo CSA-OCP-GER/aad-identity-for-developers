@@ -1,0 +1,17 @@
+﻿@{
+    ViewData["Title"] = "ResourceGroups Page";
+}
+
+@model List<string>
+
+<div class="text-center">
+    <h1 class="display-4">ResourceGroups</h1>
+    <p>Available ResourceGroups, queried by created Service Principal</p>
+</div>
+
+@foreach (var rg in Model)
+{
+    <div class="row">
+        <label class="col-md-6">@rg</label>
+    </div>
+}

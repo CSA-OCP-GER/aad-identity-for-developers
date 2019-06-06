@@ -1,6 +1,6 @@
 # Use a Service Principal to call Azure Resource Manager API
 
-## Here ist what you learn
+## Here is what you will learn
 
 - create a Service Principal in AAD
 - use RBAC to authorize access to an Azure subscription for the Service Principal

@@ -1,0 +1,20 @@
+﻿@model aspnetcore_oidc_azuremanagement.Models.Subscription
+
+@{
+    ViewData["Title"] = "Service Principal Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Creating a Service Principal</h1>
+    <p>Please select an Azure subscription:</p>
+</div>
+<form asp-controller="ServicePrincipal" asp-action="Create" method="post" role="form" class="form-horizontal">
+    <div class="form-group row">
+        <label for="selectSubscription" class="col-md-3">Subscription</label>
+            <select asp-for="Id" id="selectSubscription" class="col-md-9"
+                    asp-items="@(new SelectList(ViewBag.Subscriptions, "Id", "Displayname"))"></select>
+    </div>
+    <div class="form-group">
+        <input id="Submit1" type="submit" value="Create" class="col-md-2 btn-primary" />
+    </div>
+</form>
