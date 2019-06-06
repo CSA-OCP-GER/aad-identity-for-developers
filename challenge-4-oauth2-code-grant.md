@@ -6,9 +6,15 @@
 - How to authenticate an user and start an OAuth2 code grant flow 
 - How to use an authorization code to acquire an access token to call the Microsoft Graph API
 
+The Code Grant Flow is the most secure option accessing resources on behalf of an user. However, this flow requires our application to have a server backend. It is not suited for web apps that run 100% in the browser and do not have a backend. TODO: Explain more and verify.
+
 ## Create an AAD application
 
-Before you can authenticate an user and acquire an access token for `microsoft.graph.com` you have to register an application in your Azure AD tenant. TODO: Missing instructions for generating passwords, etc.
+Before you can authenticate an user and acquire an access token for `microsoft.graph.com` you have to register an application in your Azure AD tenant.
+
+This time we'll also set a password for the application. This is used during communication between your applications backend to the Graph API, but more on that later.
+
+TODO: Missing instructions for generating passwords, etc.
 
 You can either use the PowerShell Module Az or Azure CLI.
 
@@ -91,8 +97,11 @@ client_id=APPLICATION_ID
 &scope=https%3A%2F%2Fgraph.microsoft.com%2Fuser.read
 &code=AUTHORIZATION_CODE
 &redirect_uri=http%3A%2F%2Flocalhost%3A5001%2Fapi%2Ftokenechocode
-&grant_type=authorization_code&client_secret=PASSWORD
+&grant_type=authorization_code
+&client_secret=PASSWORD
 ```
+
+For real-world scenarios it is important to note that the `client_secret` is stored in your application's backend (e.g., in an Azure Key Vault) and that is being sent on the back-channel from your backend to AAD. As we are receiving the initial authorization `code` on the front channel (which is potentially less secure), this is an easy way to make sure that **only our application** can convert the `code` into an `access_token` for accessing the Graph API - even if an attacker gets hold of the `code`.
 
 The response should look something like this:
 
@@ -119,7 +128,7 @@ $result.access_token
 
 ## Query Microsoft Graph API
 
-Finally you can query your full profile using Postman or Insomnia by properly setting the `Authorization` header and passing in your newly generated `access_token`.
+Finally you can query your full profile from the Graph API using Postman or Insomnia by properly setting the `Authorization` header and passing in your newly generated `access_token`.
 
 ```HTTP
 GET https://graph.microsoft.com/v1.0/me

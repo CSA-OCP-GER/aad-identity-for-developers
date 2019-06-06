@@ -140,12 +140,14 @@ Invoke-WebRequest -Uri https://graph.microsoft.com/v1.0/me -Headers $headers -Me
 
 ## Acquire an access token using the refresh token
 
-With a `refresh_token` you can acquire a new `access_token` for all protected resources as long as the signed-in user has granted consent or until the `refresh_token` times out. This allows us to make API calls on behalf of the user after the initial `access_token` expires (default is 3600 seconds). These two links will be helpful understanding the use and lifetime of these tokens:
+An `access_token` does not live forever - In fact, our initial `access_token` expires per default after 3600 seconds. The lifetime of access tokens is usually in the range of minutes to hours.
+
+Once the initial `access_token` has expired, we can use the `refresh_token` to acquire a new `access_token`. This is possible as long as the signed-in user has granted consent or until the `refresh_token` times out. Typical life times for refresh tokens are in the range of days (e.g., 30 or 90 days). These two links will be helpful for further understanding the use and lifetime of these tokens:
 
 * [Token Types](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-configurable-token-lifetimes#token-types) - What is an `access_token` and `refresh_token` 
 * [Token Lifetime properties](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-configurable-token-lifetimes#configurable-token-lifetime-properties).
 
-Open Postman or Insomnia and run the following `POST` request - make sure to replace the following parameters:
+Now back to how to generate an `access_token` from the `refresh_token`. Open Postman or Insomnia and run the following `POST` request - make sure to replace the following parameters:
 
 * `TENANT_ID` - Your AAD tenant Id
 * `APPLICATION_ID` - Your AAD application Id (from the create step at the top)
