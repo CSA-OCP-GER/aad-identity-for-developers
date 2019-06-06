@@ -33,13 +33,16 @@ Connect-AzureAD
 
 ### Step 1: Register an Azure AD Application for the API
 
-To expose an API application in Azure AD, OAuth 2.0 permission scopes must be exposed.
-When creating an Azure AD application using the `New-AzureADApplication` Cmdlet, a scope named `user_impersonation` is created automatically.
+To expose an API in Azure AD, that can be accessed by a client in the user's context, OAuth 2.0 Permission scopes must be exposed. These permissions are called `Delegated Permissions`.
+Consider you want to implement an API that manages a Todo list for users, and you want to allow a consuming client app to access the Todo list of the signed-in user, you can define a permission `Todo.Read`. When the consuming client app wants to access the API in the user's context, the user must consent to `Todo.Read`. The consuming client can then acquire an access token that contains information about the user and the consuming client app.
+As the access token must be used in the Http authorization header for each API call, the API can query information about the calling user to show only Todo items that belongs to the calling user. 
+When creating an Azure AD application using the `New-AzureADApplication` Cmdlet, a scope named `user_impersonation` is created automatically. 
 
 If you want to create additional scopes, you can use following PowerShell code:
 
 ```powershell
 $exposedScopes = New-Object -TypeName Microsoft.Open.AzureAD.Model.OAuth2Permission
+## With Type `User`, users can consent. With Type `Admin`, an Azure AD admin can consent only
 $exposedScopes.Type = "User"
 $exposedScopes.AdminConsentDisplayName = "AccessEcho Claims API"
 $exposedScopes.AdminConsentDescription = "AccessEcho Claims API on behalf of signed-in users to echo claims."
