@@ -14,13 +14,10 @@ This challenge shows you how you can create an application that creates a Servic
 Sometimes your application needs access to Azure resources in a background service or daemon. A backround service or daemon does not have an active user signed-in, therefore we can not acquire an access token on behalf of a user. A Service Principal is an Azure Active Directory Security Principal that can be used to acquire an access token on behalf of the Service Principal. 
 In Azure AD an application has to be created, before a Service Principal can be created for that application.
 
-## `Note`
+### Note
 
-```
-An Azure AD application is defined by its one and only application object, which resides in the Azure AD tenant where the application was registered, known as the application's "home" tenant. 
+>An Azure AD application is defined by its one and only application object, which resides in the Azure AD tenant where the application was registered, known as the application's "home" tenant. 
 To access resources that are secured by an Azure AD tenant, the entity that requires access must be represented by a security principal. This is true for both users (user principal) and applications (service principal).
-
-```
 
 To grant access to Azure resources for a Service Principal role-based access control (RBAC) for Azure resources must be used. You can find more details about RBAC for Azure [here](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview). In this example we assign the role `Contributor` to the Service Principal at the subscription scope. 
 
