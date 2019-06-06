@@ -53,3 +53,88 @@ Here is an example of an app role for an application.
   ],
 "availableToOtherTenants": false,
 ```
+
+In this challenge we use an application with two different roles:
+* Admin: A role for administrators that have full access to content and functionality
+* User: A role for users that have only access to a subset of content and functionality
+
+## Register an Azure AD application and add app roles
+
+To register an Azure AD application you can either use PowerShell or Azure-CLI
+
+### PowerShell
+
+```PowerShell
+Import-Module AzureAD
+Connect-AzureAD
+# create the admin role
+$adminrole = New-Object -TypeName Microsoft.Open.AzureAD.Model.AppRole
+$adminrole.Description = "Administrator role: Admins have full access to content and functionality"
+$adminrole.Id = New-Guid
+$adminrole.IsEnabled = $true
+$adminrole.Value = "Administrators"
+$adminrole.DisplayName = "Administrators"
+# create the user role
+$userrole = New-Object -TypeName Microsoft.Open.AzureAD.Model.AppRole
+$userrole.AllowedMemberTypes = "User"
+$userrole.Description = "Users role: Users have access to a subset of content and functionality"
+$userrole.Id = New-Guid
+$userrole.IsEnabled = $true
+$userrole.Value = "Users"
+$userrole.DisplayName = "Users"
+# create the application
+$app = New-AzureADApplication -DisplayName "challengeapproles" -IdentifierUris "https://challengeapproles" -ReplyUrls "http://localhost:5001/api/tokenecho" -AppRoles $adminrole,$userrole
+```
+
+### Azure-CLI
+Todo
+
+## Run the Token Echo Server
+
+Open another shell and run the Token Echo Server from [`apps/token-echo-server`](apps/token-echo-server) in this repository. This helper ASP.NET Core tool is used to echo the token issued by your AAD and "simulates" our website or server backend that would receive the `id_token`.
+The tool is listening on port 5001 on your local machine. Tokens are accepted on the route `http://localhost:5001/api/tokenecho`. this is why we initially registered an AAD application with a reply url pointing to `http://localhost:5001/api/tokenecho`.
+
+```
+dotnet run
+```
+
+## Create an authentication request
+
+Replace `TENANT_ID` with your TenantId and `APPLICATION_ID` with your ApplicationId. Open a browser and paste the modified request.
+
+```
+// Line breaks are for readability only
+
+GET
+https://login.microsoftonline.com/2a151364-d43b-4192-b727-ab106e85ccdd/oauth2/v2.0/authorize?
+client_id=f0ce9a58-0a6a-41e6-bf05-921fbf684710
+&response_type=id_token
+&redirect_uri=http%3A%2F%2Flocalhost%3A5001%2Fapi%2Ftokenecho
+&response_mode=form_post
+&scope=openid%20profile
+&nonce=1234
+```
+
+Copy the `id_token` value from your browser output, go to [https://jwt.ms](https://jwt.ms) and paste the token. Take a minute and have a look at the decoded token.
+You will not find any information about an assigned app role!!
+
+## Assign an application role
+
+Now we assign the app role `Administrator` to your Azure AD user. 
+
+### PowerShell
+
+```PowerShell
+# Get the ServicePrincipal
+$sp = Get-AzureADServicePrincipal -SearchString $app.DisplayName
+$user = Get-AzureADUser -ObjectId "<your user's UPN e.g. max.mustermann@muster.onmicrosoft.com>"
+New-AzureADUserAppRoleAssignment -ObjectId $user.ObjectId -PrincipalId $user.ObjectId -ResourceId $sp.ObjectId -Id $adminrole.Id
+```
+
+### Azure CLI
+Todo
+
+## Create the authentication request again
+
+Create the authentication request again and take look at the token.
+You will see that there is a new claim `roles` issued that contains your app roles that you were assigned to.
