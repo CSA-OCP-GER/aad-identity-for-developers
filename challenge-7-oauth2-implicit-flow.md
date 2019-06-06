@@ -5,6 +5,12 @@
 - How to register an Azure AD application and allow the OAuth2 Implicit Grant Flow
 - How to authenticate an user and start an OAuth2 implicit flow to acquire an access token to call Microsoft Graph API
 
+*Important Note:*
+The Implicit Grant Flow is less secure than the Code Grant Flow we looked at earlier. This is because the generation of the `access_token` for accessing the user's data on a resource server (e.g., the Graph API), is completely happening on the front channel. However, as the flow completely happens in the browser, it is suited for applications that do not have a server backend (e.g., 100% JS-based static web app). 
+
+Nowadays, it is recommended to use the [authorization code flow with the PKCE extension](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow). We'll look into that later, but it helps to understand the implicit flow first.
+
+
 ## Create an Azure AD application and enable Implicit grant flow
 
 Before you can authenticate an user and acquire an access token for `microsoft.graph.com` you have to register an application in your Azure AD tenant. By default the implicit grant flow is disabled.
@@ -66,12 +72,11 @@ client_id=APPLICATION_ID
 &nonce=1234
 ```
 
-This will return an `id_token`.
-TODO: Describe what to do with the token...
+This will return an `id_token`, which the basic profile information for the user.
 
 ## Create the request to directly acquire an `access_token` for Microsoft Graph API
 
-We can directly request an access token by also specifying `token` in the `response_type` field. Adding `token` will allow our app to receive an access token immediately from the authorize endpoint without having to make a second request to the authorize endpoint. If you use the token `response_type`, the scope parameter must contain a scope indicating which resource to issue the token for.
+We can also directly request an `access_token` by specifying `token` in the `response_type` field. Adding `token` will allow our app to receive an `access_token` immediately from the authorize endpoint without having to make a second request to the token endpoint. If you use the token `response_type`, the scope parameter must contain a scope indicating which resource to issue the token for.
 
 Replace `TENANT_ID` with your AAD Tenant Id and `APPLICATION_ID` with your Application Id. Open a browser and paste the request:
 
