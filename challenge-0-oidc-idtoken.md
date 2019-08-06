@@ -79,6 +79,8 @@ client_id=APPLICATION_ID
 &nonce=1234
 ```
 
+For explanation, `openid` scope allows the user to sign in, and `profile` scope allows us to read the basic profile information of the user.
+
 Copy the `id_token` value from your browser output, go to [https://jwt.ms](https://jwt.ms) and paste the token. Take a minute and have a look at the decoded token.
 
 If you need further information about the issued claims take a look [here](https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens#header-claims).

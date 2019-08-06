@@ -3,10 +3,13 @@
 This repository gives several examples on how to integrate your your applications with Azure Active Directory.
 
 ## Prerequisites
-* Node.js
-* Angular CLI
+
+* Azure CLI or PowerShell Az module
 * ASP.NET Core 2.2
-* Postman or Insomnia
+* Angular CLI
+* [Visual Studio Code](https://code.visualstudio.com/)
+* [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) plugin for VSCode
+* Node.js
 
 ## Challenges
 
@@ -15,7 +18,6 @@ This repository gives several examples on how to integrate your your application
 * [02 - OIDC - Registering an application in AAD and receiving an ID Token via a URL Fragment](challenge-2-oidc-idtoken-fragment.md)
 * [03 - OIDC - Integrating an Angular SPA (Single page application) with Azure AD](challenge-3-oidc-idtoken-angularspa.md)
 * [04 - OAuth2 - Code Grant Flow](challenge-4-oauth2-code-grant.md)
-* [05 - OAuth2 - Code Grant Flow with refresh tokens](challenge-5-oauth2-refreshtoken.md)
 * 06 - TODO
 * [07 - OAuth2 - Implicit Grant Flow](challenge-7-oauth2-implicit-flow.md)
 * [08 - OAuth2 - Implicit Grant Flow in a SPA (Single Page Application)](challenge-8-oauth2-implicit-flow-angularspa.md)
