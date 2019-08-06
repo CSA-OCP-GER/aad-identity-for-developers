@@ -10,9 +10,9 @@ In this challenge we use an already implemented ASP.NET Core MVC web application
 ## Create an AAD application
 
 Before you can authenticate an user and acquire an access token for microsoft.graph.com you have to register an application in your Azure AD tenant. You also have to create 
-You can either use the Powershell Module Az or Azure CLI.
+You can either use the PowerShell Module Az or Azure CLI.
 
-### Powershell
+### PowerShell
 
 ```powershell
 # Create the Azure AD application

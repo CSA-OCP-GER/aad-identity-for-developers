@@ -5,9 +5,9 @@
 - How to register an Azure AD application and allow the OAuth2 Implicit Grant Flow
 - How to run an Angular SPA demo application that calls the Microsoft Graph API to read an user's profile
 
-## Create an Azure AD application and enable Implicit grant flow
+## Create an Azure AD application and enable Implicit Grant Flow
 
-Before you can authenticate an user and acquire an access token for `microsoft.graph.com` you have to register an application in your Azure AD tenant. By default the implicit grant flow is disabled.
+Before you can authenticate an user and acquire an access token for `microsoft.graph.com` you have to register an application in your Azure AD tenant. By default the Implicit Grant Flow for issuing access tokens is disabled.
 
 ### PowerShell
 
@@ -105,3 +105,7 @@ Remove-AzAdApplication -ApplicationId <applicationid> -Force
 ```shell
 az ad app delete --id <applicationid>
 ```
+
+## Summary
+
+This challenge showed how to create a SPA and use the OAuth 2.0 Implicit Grant Flow to request an access token for accessing the Graph API and reading the user's profile. The full process is described [here](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-implicit-grant-flow).

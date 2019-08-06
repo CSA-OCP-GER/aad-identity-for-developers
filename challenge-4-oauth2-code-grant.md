@@ -185,4 +185,4 @@ az ad app delete --id <applicationid>
 
 ## Summary
 
-This challenge showed how to create a new application in AAD and use the OAuth 2.0 Code Grant Flow to request token for accessing the Graph API. The full process is described [here](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow).
+This challenge showed how to create a new application in AAD and use the OAuth 2.0 Code Grant Flow to request tokens for accessing the Graph API. The full process is described [here](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow).
