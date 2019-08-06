@@ -5,10 +5,10 @@
 - How to register an AAD application
 - How to authenticate Azure AD users in an Angular SPA (Single Page Application)
 
-This challenge is similar to challenge 2, but uses an Angular instead of .NET Core.
+This challenge is similar to [challenge 2](challenge-2-oidc-idtoken-fragment.md), but uses an Angular instead of .NET Core and a Fragment URL for receiving the `id_token`.
 
 There is already a simple [Angular SPA demo](apps/angular-spa-oidc-token) implemented in this repository.
-The demo application uses [MSAL for Angular](https://www.npmjs.com/package/@azure/msal-angular). MSAL is a library that gives your app the ability to integrate with Azure AD.
+The demo application uses the [MSAL for Angular](https://www.npmjs.com/package/@azure/msal-angular) library. MSAL is a library that gives your app the ability to integrate with Azure AD.
 [MSAL for Angular](https://www.npmjs.com/package/@azure/msal-angular) is an Angular wrapper for [MSAL.js](https://github.com/AzureAD/microsoft-authentication-library-for-js).
 
 ## Create an AAD application
@@ -54,7 +54,7 @@ npm install
 ng serve --port 5003
 ```
 
-This command brings up the demo application listening on port 5003. Open a browser and navigate to [`http://localhost:5003`](http://localhost:5003).
+This command brings up the demo application listening on port 5003. Open a browser and navigate to [`http://localhost:5003`](http://localhost:5003) and use the app.
 
 ## Cleanup resources
 

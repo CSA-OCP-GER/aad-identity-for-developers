@@ -1,4 +1,4 @@
-# Receive an ID Token from AAD
+# Request an ID Token from AAD
 
 ## Here is what you'll learn
 
@@ -15,8 +15,8 @@ In short:
 1. We show the user a sign-in button
 1. The sign-in button forwards to the `.../oauth2/v2.0/authorize` URL, including the ID of our application and the ID of our AAD tenant
 1. The user logs in and consents to letting us access his or her profile
-1. Our AAD tenants forwards us to the callback URL and includes an `id_token`, which contains basic profile information of the user (in form of a JWT (JSON Web Token))
-1. Lastly, we could validate the returned `id_token` using its signature (not shown here)
+1. Our AAD tenants forwards us to the callback URL and includes an `id_token`, which contains basic profile information of the user in form of a JWT (JSON Web Token)
+1. Lastly, we could validate the returned `id_token` using its signature (not shown here, most libraries do this for us)
 
 ## Create an AAD application
 
@@ -27,7 +27,10 @@ Before we can authenticate an user we have to register an application in our AAD
 ```powershell
 New-AzADApplication -DisplayName ChallengeIdToken -IdentifierUris https://challengeidtoken -ReplyUrls http://localhost:5001/api/tokenecho
 ```
-Retrieve the ID of your current AAD tenant via:
+
+**Note:** The `IdentifierUris` needs to be unique within an instance of AAD.
+
+Now, retrieve the ID of your current AAD tenant via:
 
 ```powershell
 Get-AzContext
@@ -38,6 +41,7 @@ Get-AzContext
 ```shell
 az ad app create --display-name challengeidtokencli --reply-urls http://localhost:5001/api/tokenecho --identifier-uris https://challengeidtoken
 ```
+**Note:** The `IdentifierUris` needs to be unique within an instance of AAD.
 
 Retrieve the ID of your current AAD tenant via:
 
@@ -47,16 +51,15 @@ az account show
 
 ### Viewing your ApplicationId
 
-Note the `appId` value in the response - this is the id under which your AAD application has been registered.
-
-In the Azure Portal, we can see your new app registration under `AAD --> App Registrations --> Owned applications`:
+Note the `appId` value in the response - this is the id under which your AAD application has been registered. In the Azure Portal, we can see your new app registration under `AAD --> App Registrations --> Owned applications`:
 
 ![alt-text](images/aad_app_registration.png)
 
 ## Run the Token Echo Server
 
 Open another shell and run the Token Echo Server from [`apps/token-echo-server`](apps/token-echo-server) in this repository. This helper ASP.NET Core tool is used to echo the token issued by your AAD and "simulates" our website or server backend that would receive the `id_token`.
-The tool is listening on port 5001 on your local machine. Tokens are accepted on the route `http://localhost:5001/api/tokenecho`. this is why we initially registered an AAD application with a reply url pointing to `http://localhost:5001/api/tokenecho`.
+
+The tool is listening on port 5001 on your local machine. Tokens are accepted on the route `http://localhost:5001/api/tokenecho`. This is why we initially registered an AAD application with a reply url pointing to `http://localhost:5001/api/tokenecho`.
 
 ```
 dotnet run
@@ -64,12 +67,9 @@ dotnet run
 
 ## Create an authentication request
 
-Replace `TENANT_ID` with your TenantId and `APPLICATION_ID` with your ApplicationId. Open a browser and paste the modified request.
+Replace `TENANT_ID` with your AAD Tenant Id and `APPLICATION_ID` with your Application Id. Open a browser and paste the modified request.
 
 ```
-// Line breaks are for readability only
-
-GET
 https://login.microsoftonline.com/TENANT_ID/oauth2/v2.0/authorize?
 client_id=APPLICATION_ID
 &response_type=id_token
@@ -99,4 +99,4 @@ az ad app delete --id <applicationid>
 
 ## Summary
 
-This challenge showed how to create an new application in AAD and how an authentication request for authenticating an user can be created using the Open ID Connect protocol. The full process is described [here](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-protocols-oidc).
+This challenge showed how to create a new application in AAD and how user can be authenticated using the Open ID Connect protocol. The full process is described [here](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-protocols-oidc).
